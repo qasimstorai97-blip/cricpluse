@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,31 +9,175 @@
   <meta name="google-site-verification" content="bCEF5UPPezXRGtvqkm-t9BrjrzlysPt8NG17dHIWCKA" />
 
   <title>CricPluse - Cricket</title>
+  <meta name="description" content="CricPluse is your cricket home for live scores, match schedules, cricket news, teams, players, rankings and videos.">
+
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Arial,Helvetica,sans-serif;background:#f4f7f9;color:#17202a}
-    header{background:#0b3d2e;color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:10}
-    .logo{font-size:28px;font-weight:800}.logo span{color:#f7c843}
-    nav{display:flex;flex-wrap:wrap;gap:8px}
-    nav a{color:white;text-decoration:none;padding:9px 12px;border-radius:7px;font-size:14px}
-    nav a:hover{background:#176b4e}
-    .hero{background:linear-gradient(135deg,#0b3d2e,#176b4e);color:white;padding:65px 5%;text-align:center}
-    .hero h1{font-size:48px;margin-bottom:12px}.hero p{font-size:19px;opacity:.9}
-    .container{width:90%;max-width:1200px;margin:30px auto}
-    .section{margin-bottom:38px}.section h2{font-size:28px;margin-bottom:16px;color:#0b3d2e}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
-    .card{background:white;border-radius:12px;padding:20px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
-    .card h3{margin-bottom:10px;color:#0b3d2e}.muted{color:#667085}
-    .score{font-size:24px;font-weight:700;margin:10px 0}.badge{display:inline-block;background:#e8f7ef;color:#087443;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:700}
-    .news-card p{line-height:1.6}.empty{padding:25px;text-align:center;background:white;border-radius:12px;color:#667085}
-    footer{background:#0b3d2e;color:white;text-align:center;padding:25px;margin-top:50px}
-    @media(max-width:700px){header{flex-direction:column;align-items:flex-start}.hero h1{font-size:36px}nav a{padding:7px 8px;font-size:13px}}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7f9;
+      color: #17202a;
+    }
+
+    header {
+      background: #0b3d2e;
+      color: white;
+      padding: 18px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #f7c843;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 9px 12px;
+      border-radius: 7px;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      background: #176b4e;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0b3d2e, #176b4e);
+      color: white;
+      padding: 65px 5%;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: 19px;
+      opacity: 0.9;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 30px auto;
+    }
+
+    .section {
+      margin-bottom: 38px;
+    }
+
+    .section h2 {
+      font-size: 28px;
+      margin-bottom: 16px;
+      color: #0b3d2e;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      color: #0b3d2e;
+    }
+
+    .muted {
+      color: #667085;
+    }
+
+    .score {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e8f7ef;
+      color: #087443;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .news-card p {
+      line-height: 1.6;
+    }
+
+    .empty {
+      padding: 25px;
+      text-align: center;
+      background: white;
+      border-radius: 12px;
+      color: #667085;
+    }
+
+    footer {
+      background: #0b3d2e;
+      color: white;
+      text-align: center;
+      padding: 25px;
+      margin-top: 50px;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      nav a {
+        padding: 7px 8px;
+        font-size: 13px;
+      }
+    }
   </style>
 </head>
+
 <body>
 
 <header>
   <div class="logo">Cric<span>Pluse</span></div>
+
   <nav>
     <a href="#home">Home</a>
     <a href="#live">Live Scores</a>
@@ -52,8 +197,10 @@
 </section>
 
 <main class="container">
+
   <section class="section" id="live">
     <h2>Live Score</h2>
+
     <div class="grid">
       <div class="card">
         <span class="badge">LIVE</span>
@@ -66,47 +213,77 @@
 
   <section class="section" id="matches">
     <h2>Matches</h2>
+
     <div class="grid">
-      <div class="card"><h3>Upcoming Matches</h3><p class="muted">Match schedules will appear here.</p></div>
-      <div class="card"><h3>Recent Matches</h3><p class="muted">Recent match results will appear here.</p></div>
+      <div class="card">
+        <h3>Upcoming Matches</h3>
+        <p class="muted">Match schedules will appear here.</p>
+      </div>
+
+      <div class="card">
+        <h3>Recent Matches</h3>
+        <p class="muted">Recent match results will appear here.</p>
+      </div>
     </div>
   </section>
 
   <section class="section" id="news">
     <h2>Latest Cricket News</h2>
+
     <div id="newsList" class="grid">
-      <div class="empty">Loading latest news...</div>
+      <div class="empty">Cricket news will appear here when available.</div>
     </div>
   </section>
 
   <section class="section" id="teams">
     <h2>Teams</h2>
+
     <div class="grid">
-      <div class="card"><h3>International Teams</h3><p class="muted">Teams section is ready for future updates.</p></div>
+      <div class="card">
+        <h3>International Teams</h3>
+        <p class="muted">Teams section is ready for future updates.</p>
+      </div>
     </div>
   </section>
 
   <section class="section" id="players">
     <h2>Players</h2>
+
     <div class="grid">
-      <div class="card"><h3>Cricket Players</h3><p class="muted">Player profiles will appear here.</p></div>
+      <div class="card">
+        <h3>Cricket Players</h3>
+        <p class="muted">Player profiles will appear here.</p>
+      </div>
     </div>
   </section>
 
   <section class="section" id="rankings">
     <h2>Rankings</h2>
+
     <div class="grid">
-      <div class="card"><h3>Team Rankings</h3><p class="muted">Team rankings will appear here.</p></div>
-      <div class="card"><h3>Player Rankings</h3><p class="muted">Player rankings will appear here.</p></div>
+      <div class="card">
+        <h3>Team Rankings</h3>
+        <p class="muted">Team rankings will appear here.</p>
+      </div>
+
+      <div class="card">
+        <h3>Player Rankings</h3>
+        <p class="muted">Player rankings will appear here.</p>
+      </div>
     </div>
   </section>
 
   <section class="section" id="videos">
     <h2>Videos</h2>
+
     <div class="grid">
-      <div class="card"><h3>Cricket Videos</h3><p class="muted">Videos will appear here.</p></div>
+      <div class="card">
+        <h3>Cricket Videos</h3>
+        <p class="muted">Cricket videos will appear here.</p>
+      </div>
     </div>
   </section>
+
 </main>
 
 <footer>
@@ -114,10 +291,8 @@
 </footer>
 
 <script>
-  // Supabase connection can be added here when the project URL/key are available.
-  // The page is intentionally standalone so it can be uploaded directly as index.html.
+  // Live scores, news and match data can be connected later.
 </script>
 
 </body>
 </html>
-
