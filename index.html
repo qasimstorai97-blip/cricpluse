@@ -1,173 +1,424 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="google-site-verification" content="bCEF5UPPezXRGtvqkm-t9BrjrzlysPt8NG17dHIWCKA" />
+  <meta name="google-site-verification" content="bCEF5UPPezXRGtvqkm-t9BrjrzlysPt8NG17dHIWCKA">
 
-  <title>CricPluse - Cricket</title>
-  <meta name="description" content="CricPluse is your cricket home for live scores, match schedules, cricket news, teams, players, rankings and videos.">
+  <title>CricPluse | Live Cricket Scores, News & Matches</title>
+  <meta name="description" content="Follow cricket scores, match schedules, news, teams, players and rankings on CricPluse.">
+  <meta name="theme-color" content="#083b2b">
 
   <style>
+    :root {
+      --green: #083b2b;
+      --green-light: #126b49;
+      --gold: #f5c84c;
+      --background: #f3f6f4;
+      --text: #1b2922;
+      --muted: #68766e;
+      --border: #e2e9e4;
+      --white: #ffffff;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+    }
+
     body {
       font-family: Arial, Helvetica, sans-serif;
-      background: #f4f7f9;
-      color: #17202a;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
     }
 
     header {
-      background: #0b3d2e;
-      color: white;
-      padding: 18px 5%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
       position: sticky;
       top: 0;
       z-index: 10;
+      background: var(--green);
+      color: white;
+      box-shadow: 0 3px 14px #00000012;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      width: 92%;
+      min-height: 76px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
     }
 
     .logo {
+      color: white;
+      text-decoration: none;
       font-size: 28px;
-      font-weight: 800;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .logo span {
-      color: #f7c843;
+      color: var(--gold);
     }
 
     nav {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 4px;
     }
 
     nav a {
       color: white;
       text-decoration: none;
-      padding: 9px 12px;
+      padding: 8px 10px;
       border-radius: 7px;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 700;
     }
 
-    nav a:hover {
-      background: #176b4e;
+    nav a:hover,
+    nav a:focus-visible {
+      background: var(--green-light);
+    }
+
+    nav .admin {
+      color: var(--gold);
+      border: 1px solid #f5c84c80;
     }
 
     .hero {
-      background: linear-gradient(135deg, #0b3d2e, #176b4e);
       color: white;
-      padding: 65px 5%;
-      text-align: center;
+      background:
+        radial-gradient(circle at 85% 20%, #f5c84c25, transparent 25%),
+        linear-gradient(125deg, #052b1e, #126b49);
     }
 
-    .hero h1 {
-      font-size: 48px;
+    .hero-inner {
+      max-width: 1200px;
+      width: 90%;
+      margin: auto;
+      padding: 65px 0;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
       margin-bottom: 12px;
     }
 
+    .hero h1 {
+      font-size: clamp(35px, 5vw, 58px);
+      line-height: 1.12;
+      letter-spacing: -1.5px;
+      max-width: 760px;
+      margin-bottom: 18px;
+    }
+
     .hero p {
-      font-size: 19px;
-      opacity: 0.9;
+      color: #e2f0e8;
+      font-size: 17px;
+      max-width: 650px;
+      margin-bottom: 25px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 11px 17px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      margin: 4px 8px 4px 0;
+    }
+
+    .button-primary {
+      background: var(--gold);
+      color: #203124;
+    }
+
+    .button-secondary {
+      border: 1px solid #ffffff80;
+      color: white;
     }
 
     .container {
-      width: 90%;
       max-width: 1200px;
-      margin: 30px auto;
+      width: 92%;
+      margin: 35px auto 55px;
     }
 
     .section {
-      margin-bottom: 38px;
+      margin-bottom: 43px;
     }
 
-    .section h2 {
-      font-size: 28px;
-      margin-bottom: 16px;
-      color: #0b3d2e;
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow-dark {
+      color: var(--green-light);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    h2 {
+      color: var(--green);
+      font-size: clamp(23px, 3vw, 29px);
+      line-height: 1.25;
+      margin-top: 4px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 5px;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+      gap: 17px;
     }
 
     .card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      min-width: 0;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 21px;
+      box-shadow: 0 5px 20px #103e2910;
     }
 
     .card h3 {
-      margin-bottom: 10px;
-      color: #0b3d2e;
+      color: var(--green);
+      font-size: 17px;
+      margin-bottom: 8px;
     }
 
     .muted {
-      color: #667085;
+      color: var(--muted);
+      font-size: 14px;
     }
 
-    .score {
-      font-size: 24px;
-      font-weight: 700;
-      margin: 10px 0;
+    .live-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #bd3030;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1px;
     }
 
-    .badge {
-      display: inline-block;
-      background: #e8f7ef;
-      color: #087443;
-      padding: 5px 9px;
-      border-radius: 20px;
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e44848;
+    }
+
+    .refresh-button {
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--green);
+      border-radius: 8px;
+      padding: 9px 12px;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
+      cursor: pointer;
     }
 
-    .news-card p {
-      line-height: 1.6;
+    .refresh-button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .match-card {
+      border-left: 4px solid var(--green-light);
+    }
+
+    .match-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .status-badge {
+      background: #e8f7ee;
+      color: #087443;
+      border-radius: 30px;
+      padding: 4px 8px;
+    }
+
+    .team-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #edf1ee;
+    }
+
+    .team-name {
+      font-weight: 800;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .team-score {
+      text-align: right;
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .match-status {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
     }
 
     .empty {
-      padding: 25px;
-      text-align: center;
       background: white;
+      border: 1px dashed #cbd8cf;
+      border-radius: 13px;
+      padding: 26px 20px;
+      text-align: center;
+      color: var(--muted);
+      grid-column: 1 / -1;
+    }
+
+    .empty strong {
+      display: block;
+      color: var(--green);
+      margin-bottom: 5px;
+    }
+
+    .feature-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      background: #e8f4ec;
+      color: var(--green);
       border-radius: 12px;
-      color: #667085;
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 13px;
+      background: #f0f4f1;
+      color: #66746b;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .notice {
+      padding: 17px;
+      border: 1px solid #d6e9db;
+      background: #eaf4ed;
+      color: #27523b;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .error-text {
+      color: #a12a24;
+      font-size: 13px;
+      margin-top: 12px;
     }
 
     footer {
-      background: #0b3d2e;
-      color: white;
-      text-align: center;
-      padding: 25px;
       margin-top: 50px;
+      background: #052b1e;
+      color: #e1eee6;
+      text-align: center;
+      padding: 28px 15px;
     }
 
-    @media (max-width: 700px) {
-      header {
+    footer strong {
+      color: white;
+    }
+
+    footer p + p {
+      margin-top: 5px;
+      color: #b9cec1;
+      font-size: 12px;
+    }
+
+    @media (max-width: 850px) {
+      .header-inner {
         flex-direction: column;
         align-items: flex-start;
+        padding: 13px 0;
       }
 
-      .hero h1 {
-        font-size: 36px;
+      nav {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-inner {
+        padding: 45px 0;
+      }
+
+      .container {
+        width: 91%;
       }
 
       nav a {
+        font-size: 12px;
         padding: 7px 8px;
-        font-size: 13px;
+      }
+
+      .card {
+        padding: 17px;
+      }
+
+      .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
       }
     }
   </style>
@@ -176,122 +427,383 @@
 <body>
 
 <header>
-  <div class="logo">Cric<span>Pluse</span></div>
+  <div class="header-inner">
+    <a class="logo" href="#home">Cric<span>Pluse</span></a>
 
-  <nav>
-    <a href="#home">Home</a>
-    <a href="#live">Live Scores</a>
-    <a href="#matches">Matches</a>
-    <a href="#news">News</a>
-    <a href="#teams">Teams</a>
-    <a href="#players">Players</a>
-    <a href="#rankings">Rankings</a>
-    <a href="#videos">Videos</a>
-    <a href="admin.html">Admin</a>
-  </nav>
+    <nav aria-label="Main navigation">
+      <a href="#home">Home</a>
+      <a href="#live">Live Scores</a>
+      <a href="#matches">Matches</a>
+      <a href="#news">News</a>
+      <a href="#teams">Teams</a>
+      <a href="#players">Players</a>
+      <a href="#rankings">Rankings</a>
+      <a href="#videos">Videos</a>
+      <a class="admin" href="admin.html">Admin</a>
+    </nav>
+  </div>
 </header>
 
 <section class="hero" id="home">
-  <h1>Feel Every Moment of Cricket</h1>
-  <p>Your cricket home for live scores, matches, news, teams, players and rankings.</p>
+  <div class="hero-inner">
+    <div class="eyebrow">Your cricket, your passion</div>
+    <h1>Feel Every Moment of Cricket</h1>
+    <p>
+      Your cricket home for live scores, match updates, teams,
+      players and the latest news.
+    </p>
+    <a class="button button-primary" href="#live">View Live Scores ↓</a>
+    <a class="button button-secondary" href="#matches">Explore Matches</a>
+  </div>
 </section>
 
 <main class="container">
 
   <section class="section" id="live">
-    <h2>Live Score</h2>
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow-dark">Follow the action</div>
+        <h2>Live Cricket Scores</h2>
+        <p class="section-description">
+          Match information from the CricPluse score service.
+        </p>
+      </div>
 
-    <div class="grid">
-      <div class="card">
-        <span class="badge">LIVE</span>
-        <h3>Live Cricket Match</h3>
-        <div class="score">Coming Soon</div>
-        <p class="muted">Live score information will appear here.</p>
+      <div>
+        <span class="live-label">
+          <span class="live-dot"></span> LIVE CENTRE
+        </span>
+        <button class="refresh-button" id="refreshScores" type="button">
+          ↻ Refresh
+        </button>
       </div>
     </div>
+
+    <div id="liveScores" class="grid" aria-live="polite">
+      <div class="empty">
+        <strong>Loading match information…</strong>
+        Please wait while CricPluse checks for scores.
+      </div>
+    </div>
+
+    <p id="scoreStatus" class="error-text" role="status"></p>
   </section>
 
   <section class="section" id="matches">
-    <h2>Matches</h2>
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow-dark">Stay up to date</div>
+        <h2>Matches</h2>
+        <p class="section-description">
+          Upcoming fixtures and recent results.
+        </p>
+      </div>
+    </div>
 
     <div class="grid">
-      <div class="card">
+      <article class="card">
         <h3>Upcoming Matches</h3>
-        <p class="muted">Match schedules will appear here.</p>
-      </div>
+        <p class="muted">
+          Upcoming fixtures will appear here when a reliable
+          schedule source is connected.
+        </p>
+        <span class="tag">Schedule data pending</span>
+      </article>
 
-      <div class="card">
+      <article class="card">
         <h3>Recent Matches</h3>
-        <p class="muted">Recent match results will appear here.</p>
-      </div>
+        <p class="muted">
+          Completed match results will appear here when
+          results data is available.
+        </p>
+        <span class="tag">Results data pending</span>
+      </article>
     </div>
   </section>
 
   <section class="section" id="news">
-    <h2>Latest Cricket News</h2>
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow-dark">Around the game</div>
+        <h2>Latest Cricket News</h2>
+      </div>
+    </div>
 
-    <div id="newsList" class="grid">
-      <div class="empty">Cricket news will appear here when available.</div>
+    <div class="empty">
+      <strong>Cricket news is being prepared</strong>
+      Verified headlines will appear here after a news source is connected.
     </div>
   </section>
 
   <section class="section" id="teams">
-    <h2>Teams</h2>
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow-dark">International cricket</div>
+        <h2>Teams</h2>
+      </div>
+    </div>
 
     <div class="grid">
-      <div class="card">
+      <article class="card feature-card">
+        <div class="feature-icon">🌍</div>
         <h3>International Teams</h3>
-        <p class="muted">Teams section is ready for future updates.</p>
-      </div>
+        <p>
+          Team profiles, squad lists and international cricket information.
+        </p>
+        <span class="tag">Team profiles planned</span>
+      </article>
+
+      <article class="card feature-card">
+        <div class="feature-icon">🇦🇫</div>
+        <h3>Afghanistan Cricket</h3>
+        <p>
+          A dedicated section for Afghanistan cricket, players and fixtures.
+        </p>
+        <span class="tag">Afghanistan focus</span>
+      </article>
     </div>
   </section>
 
   <section class="section" id="players">
-    <h2>Players</h2>
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow-dark">Know the players</div>
+        <h2>Players</h2>
+      </div>
+    </div>
 
     <div class="grid">
-      <div class="card">
+      <article class="card feature-card">
+        <div class="feature-icon">👤</div>
         <h3>Cricket Players</h3>
-        <p class="muted">Player profiles will appear here.</p>
-      </div>
+        <p>
+          Player biographies, teams, roles and career statistics.
+        </p>
+        <span class="tag">Profiles planned</span>
+      </article>
     </div>
   </section>
 
   <section class="section" id="rankings">
-    <h2>Rankings</h2>
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow-dark">The numbers</div>
+        <h2>Rankings</h2>
+      </div>
+    </div>
 
     <div class="grid">
-      <div class="card">
+      <article class="card feature-card">
+        <div class="feature-icon">🏆</div>
         <h3>Team Rankings</h3>
-        <p class="muted">Team rankings will appear here.</p>
-      </div>
+        <p>
+          International team rankings across cricket formats.
+        </p>
+        <span class="tag">Ranking data pending</span>
+      </article>
 
-      <div class="card">
+      <article class="card feature-card">
+        <div class="feature-icon">⭐</div>
         <h3>Player Rankings</h3>
-        <p class="muted">Player rankings will appear here.</p>
-      </div>
+        <p>
+          Batting, bowling and all-rounder rankings from verified sources.
+        </p>
+        <span class="tag">Ranking data pending</span>
+      </article>
     </div>
   </section>
 
   <section class="section" id="videos">
-    <h2>Videos</h2>
-
-    <div class="grid">
-      <div class="card">
-        <h3>Cricket Videos</h3>
-        <p class="muted">Cricket videos will appear here.</p>
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow-dark">Watch cricket</div>
+        <h2>Cricket Videos</h2>
       </div>
     </div>
+
+    <div class="empty">
+      <strong>Cricket videos are coming</strong>
+      Video highlights and authorized links will appear here when available.
+    </div>
   </section>
+
+  <div class="notice">
+    <strong>About CricPluse</strong><br>
+    CricPluse is being developed in stages. Scores, news and statistics
+    will appear as reliable data sources are connected.
+  </div>
 
 </main>
 
 <footer>
-  <p>© 2026 CricPluse — Cricket for everyone.</p>
+  <p><strong>CricPluse</strong> — Cricket for everyone.</p>
+  <p>© <span id="year">2026</span> CricPluse. All rights reserved.</p>
 </footer>
 
 <script>
-  // Live scores, news and match data can be connected later.
+  const scoresContainer = document.getElementById("liveScores");
+  const scoreStatus = document.getElementById("scoreStatus");
+  const refreshButton = document.getElementById("refreshScores");
+
+  function makeElement(tag, className, text) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+    return element;
+  }
+
+  function getScore(score) {
+    if (!score || typeof score !== "object") {
+      return "Score unavailable";
+    }
+
+    const runs = score.r ?? score.runs;
+    const wickets = score.w ?? score.wickets;
+    const overs = score.o ?? score.overs;
+
+    if (runs === undefined && wickets === undefined && overs === undefined) {
+      return score.score ? String(score.score) : "Score unavailable";
+    }
+
+    let result = runs === undefined ? "—" : String(runs);
+
+    if (wickets !== undefined && wickets !== null) {
+      result += "/" + wickets;
+    }
+
+    if (overs !== undefined && overs !== null) {
+      result += " (" + overs + " ov)";
+    }
+
+    return result;
+  }
+
+  function renderMatches(matches) {
+    scoresContainer.replaceChildren();
+
+    if (!matches.length) {
+      const empty = makeElement("div", "empty");
+      empty.append(
+        makeElement("strong", "", "No match scores returned"),
+        document.createTextNode(
+          " No matches were included in the response. Try again later."
+        )
+      );
+      scoresContainer.appendChild(empty);
+      return;
+    }
+
+    matches.slice(0, 12).forEach(match => {
+      const card = makeElement("article", "card match-card");
+      const meta = makeElement("div", "match-meta");
+      const type = makeElement(
+        "span",
+        "",
+        match.matchType || "Cricket match"
+      );
+      const status = makeElement(
+        "span",
+        "status-badge",
+        match.matchEnded
+          ? "Completed"
+          : match.matchStarted
+            ? "In progress"
+            : "Upcoming"
+      );
+
+      meta.append(type, status);
+      card.append(
+        meta,
+        makeElement("h3", "", match.name || "Cricket Match")
+      );
+
+      const teams = Array.isArray(match.teamInfo) ? match.teamInfo : [];
+      const names = Array.isArray(match.teams) ? match.teams : [];
+      const scores = Array.isArray(match.score) ? match.score : [];
+
+      for (let i = 0; i < 2; i++) {
+        const teamName = teams[i]?.name || names[i] || `Team ${i + 1}`;
+        const score = scores[i] ? getScore(scores[i]) : "Score unavailable";
+        const row = makeElement("div", "team-row");
+
+        row.append(
+          makeElement("span", "team-name", teamName),
+          makeElement("span", "team-score", score)
+        );
+
+        card.appendChild(row);
+      }
+
+      card.appendChild(
+        makeElement(
+          "p",
+          "match-status",
+          match.status || "Match details unavailable"
+        )
+      );
+
+      scoresContainer.appendChild(card);
+    });
+  }
+
+  async function loadScores() {
+    refreshButton.disabled = true;
+    refreshButton.textContent = "Loading…";
+    scoreStatus.textContent = "";
+
+    try {
+      const response = await fetch("/api/live-scores", {
+        headers: { "Accept": "application/json" },
+        cache: "no-store"
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || result.status === "failure" ||
+          result.status === "error") {
+        throw new Error(
+          result.reason || result.message || "Score service error"
+        );
+      }
+
+      const matches = Array.isArray(result.data)
+        ? result.data
+        : Array.isArray(result.matches)
+          ? result.matches
+          : [];
+
+      renderMatches(matches);
+
+      scoreStatus.className = "";
+      scoreStatus.textContent = matches.length
+        ? "Match information loaded successfully."
+        : "The service responded, but no match list was returned.";
+
+    } catch (error) {
+      scoresContainer.replaceChildren();
+
+      const empty = makeElement("div", "empty");
+      empty.append(
+        makeElement("strong", "", "Live scores are temporarily unavailable"),
+        document.createTextNode(
+          " The score service could not return match information. Please try again later."
+        )
+      );
+
+      scoresContainer.appendChild(empty);
+      scoreStatus.className = "error-text";
+      scoreStatus.textContent =
+        "Service message: " + (error.message || "Unable to load scores") + ".";
+    } finally {
+      refreshButton.disabled = false;
+      refreshButton.textContent = "↻ Refresh";
+    }
+  }
+
+  refreshButton.addEventListener("click", loadScores);
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  loadScores();
 </script>
 
 </body>
