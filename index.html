@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="bCEF5UPPezXRGtvqkm-t9BrjrzlysPt8NG17dHIWCKA">
   <meta name="description" content="CricPluse - international cricket live scores, fixtures, results, news, teams and player rankings.">
+  <meta name="theme-color" content="#062d22">
   <title>CricPluse | Your Cricket Home</title>
+
   <style>
     :root {
       --green: #087443;
@@ -15,9 +17,17 @@
       --light: #f3f7f4;
       --white: #fff;
       --muted: #617268;
+      --border: #e0e9e2;
+      --red: #c62828;
     }
+
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -25,7 +35,11 @@
       background: var(--light);
       line-height: 1.6;
     }
+
     a { color: inherit; text-decoration: none; }
+
+    button { font: inherit; }
+
     header {
       background: var(--dark);
       color: white;
@@ -34,6 +48,7 @@
       z-index: 10;
       box-shadow: 0 3px 14px #0002;
     }
+
     .nav {
       max-width: 1180px;
       margin: auto;
@@ -44,16 +59,37 @@
       gap: 20px;
       flex-wrap: wrap;
     }
-    .logo { font-size: 27px; font-weight: 900; color: var(--gold); }
-    nav { display: flex; flex-wrap: wrap; gap: 15px; }
-    nav a { font-size: 13px; color: #edf7f0; }
+
+    .logo {
+      font-size: 27px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    nav a {
+      font-size: 13px;
+      color: #edf7f0;
+    }
+
     nav a:hover { color: var(--gold); }
+
     .hero {
       color: white;
       padding: 78px 20px;
       background: linear-gradient(120deg, #05291f, #087443);
     }
-    .hero-inner { max-width: 1180px; margin: auto; }
+
+    .hero-inner {
+      max-width: 1180px;
+      margin: auto;
+    }
+
     .eyebrow {
       color: var(--gold);
       font-weight: bold;
@@ -61,9 +97,26 @@
       letter-spacing: 2px;
       font-size: 12px;
     }
-    h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.12; margin: 12px 0; }
-    .hero p { max-width: 620px; color: #d9ebe0; font-size: 17px; }
-    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 25px; }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 60px);
+      line-height: 1.12;
+      margin: 12px 0;
+    }
+
+    .hero p {
+      max-width: 620px;
+      color: #d9ebe0;
+      font-size: 17px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 25px;
+    }
+
     .btn {
       display: inline-block;
       border: 0;
@@ -74,55 +127,204 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     .btn.secondary { background: white; }
-    main { max-width: 1180px; margin: auto; padding: 28px 20px 55px; }
-    section { padding: 28px 0; scroll-margin-top: 90px; }
+
+    .btn:disabled {
+      opacity: .65;
+      cursor: wait;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: auto;
+      padding: 28px 20px 55px;
+    }
+
+    section {
+      padding: 28px 0;
+      scroll-margin-top: 90px;
+    }
+
     .section-head { margin-bottom: 20px; }
-    .section-head small { color: var(--green); font-weight: bold; text-transform: uppercase; letter-spacing: 1.4px; }
-    h2 { margin: 4px 0; font-size: 30px; color: var(--dark); }
+
+    .section-head small {
+      color: var(--green);
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+    }
+
+    h2 {
+      margin: 4px 0;
+      font-size: 30px;
+      color: var(--dark);
+    }
+
     h3 { margin: 0 0 8px; }
+
     .muted { color: var(--muted); }
-    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
     .card {
+      min-width: 0;
       background: white;
       padding: 21px;
       border-radius: 14px;
-      border: 1px solid #e0e9e2;
+      border: 1px solid var(--border);
       box-shadow: 0 5px 18px #0b35200a;
     }
+
     .score-card { border-top: 4px solid var(--green); }
-    .status { display: inline-block; background: #e3f5e9; color: #087443; padding: 3px 9px; border-radius: 30px; font-size: 11px; font-weight: bold; }
-    .error { background: #fff1ed; border-color: #f2d4ca; }
-    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 15px 0; }
-    .filter {
-      padding: 8px 13px; border-radius: 30px; border: 1px solid #d3dfd6;
-      background: white; cursor: pointer;
+
+    .status {
+      display: inline-block;
+      background: #e3f5e9;
+      color: var(--green);
+      padding: 3px 9px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: bold;
     }
-    .filter.active { background: var(--green); color: white; border-color: var(--green); }
-    .wide { grid-column: 1 / -1; }
-    .team { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #edf1ed; }
+
+    .live-badge {
+      background: #ffe5e5;
+      color: #b42318;
+    }
+
+    .completed-badge {
+      background: #e8edf0;
+      color: #45545e;
+    }
+
+    .upcoming-badge {
+      background: #fff1cc;
+      color: #805b00;
+    }
+
+    .error {
+      background: #fff1ed;
+      border-color: #f2d4ca;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 15px 0 22px;
+    }
+
+    .filter {
+      padding: 8px 13px;
+      border-radius: 30px;
+      border: 1px solid #d3dfd6;
+      background: white;
+      cursor: pointer;
+    }
+
+    .filter.active {
+      background: var(--green);
+      color: white;
+      border-color: var(--green);
+    }
+
+    .team {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf1ed;
+    }
+
     .team:last-child { border-bottom: 0; }
-    .score { font-weight: bold; }
-    .notice { background: #edf6ef; border-radius: 10px; padding: 13px 15px; color: #315541; }
-    footer { background: var(--dark); color: #e4eee7; padding: 28px 20px; text-align: center; }
+
+    .team-name {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .score {
+      font-weight: bold;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .notice {
+      background: #edf6ef;
+      border-radius: 10px;
+      padding: 13px 15px;
+      color: #315541;
+      grid-column: 1 / -1;
+    }
+
+    .match-section { margin-top: 30px; }
+
+    .match-section h3 { margin-bottom: 14px; }
+
+    .match-title {
+      font-size: 17px;
+      line-height: 1.4;
+      margin: 12px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .match-meta {
+      font-size: 13px;
+      margin: 10px 0 0;
+    }
+
+    .update-time {
+      font-size: 12px;
+      color: #d9ebe0;
+    }
+
+    .section-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    footer {
+      background: var(--dark);
+      color: #e4eee7;
+      padding: 28px 20px;
+      text-align: center;
+    }
+
     footer a { color: var(--gold); }
-    @media (max-width: 760px) {
+
+    @media (max-width: 900px) {
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
       .hero { padding: 54px 20px; }
       nav { gap: 10px; }
     }
+
     @media (max-width: 520px) {
       .grid { grid-template-columns: 1fr; }
       .nav { align-items: flex-start; }
       nav { width: 100%; }
       h2 { font-size: 25px; }
+      .card { padding: 17px; }
     }
   </style>
 </head>
+
 <body>
 <header>
   <div class="nav">
     <a class="logo" href="#home">CricPluse</a>
+
     <nav aria-label="Main navigation">
       <a href="#home">Home</a>
       <a href="#live">Live Scores</a>
@@ -141,7 +343,11 @@
   <div class="hero-inner">
     <div class="eyebrow">Your cricket, your passion</div>
     <h1>Feel Every Moment<br>of Cricket</h1>
-    <p>Your cricket home for international live scores, match schedules, results, teams, players and the latest cricket news.</p>
+    <p>
+      Your cricket home for international live scores, match schedules,
+      results, teams, players and the latest cricket news.
+    </p>
+
     <div class="actions">
       <a class="btn" href="#live">View Live Scores ↓</a>
       <a class="btn secondary" href="#matches">Explore Matches</a>
@@ -154,15 +360,25 @@
     <div class="section-head">
       <small>Follow the action</small>
       <h2>Live Cricket Scores</h2>
-      <p class="muted">Live match information from the CricPluse score service.</p>
+      <p class="muted">
+        Live match information from the CricPluse score service.
+      </p>
     </div>
+
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div class="section-title-row">
         <strong>🌍 International Live Centre</strong>
-        <button class="btn" id="refreshScores" type="button">↻ Refresh Scores</button>
+        <button class="btn" id="refreshScores" type="button">
+          ↻ Refresh Scores
+        </button>
       </div>
+
+      <p class="update-time" id="lastUpdated" aria-live="polite">
+        Waiting for score data...
+      </p>
+
       <div id="liveScores" style="margin-top:18px" aria-live="polite">
-        <p class="muted">Loading live match information...</p>
+        <p class="muted">Loading cricket scores...</p>
       </div>
     </div>
   </section>
@@ -171,31 +387,38 @@
     <div class="section-head">
       <small>Stay up to date</small>
       <h2>Matches</h2>
-      <p class="muted">International fixtures and results across cricket formats and competitions.</p>
+      <p class="muted">
+        International fixtures and results across cricket formats and competitions.
+      </p>
     </div>
+
     <div class="filters" aria-label="Match formats">
-      <button class="filter active" data-format="All">All Matches</button>
-      <button class="filter" data-format="Test">Test</button>
-      <button class="filter" data-format="ODI">ODI</button>
-      <button class="filter" data-format="T20I">T20I</button>
-      <button class="filter" data-format="League">Leagues</button>
+      <button class="filter active" data-format="All" type="button">All Matches</button>
+      <button class="filter" data-format="Test" type="button">Test</button>
+      <button class="filter" data-format="ODI" type="button">ODI</button>
+      <button class="filter" data-format="T20I" type="button">T20I</button>
+      <button class="filter" data-format="League" type="button">Leagues</button>
     </div>
-    <div class="grid">
-      <article class="card">
-        <h3>📅 Upcoming Matches</h3>
-        <p class="muted">Upcoming fixtures from international cricket and leagues will appear here when a reliable schedule source is connected.</p>
-        <span class="status">Schedule data pending</span>
-      </article>
-      <article class="card">
-        <h3>🏏 Recent Results</h3>
-        <p class="muted">Completed matches and verified results will appear here when results data is available.</p>
-        <span class="status">Results data pending</span>
-      </article>
-      <article class="card">
-        <h3>🌐 All Teams Equal</h3>
-        <p class="muted">Coverage is designed for all international teams and competitions, not one country alone.</p>
-        <span class="status">Global coverage</span>
-      </article>
+
+    <div class="match-section">
+      <h3>🔴 Live Matches</h3>
+      <div id="liveMatches" class="grid">
+        <p class="notice">Loading live matches...</p>
+      </div>
+    </div>
+
+    <div class="match-section">
+      <h3>📅 Upcoming Matches</h3>
+      <div id="upcomingMatches" class="grid">
+        <p class="notice">Loading upcoming matches...</p>
+      </div>
+    </div>
+
+    <div class="match-section">
+      <h3>🏏 Recent Results</h3>
+      <div id="recentMatches" class="grid">
+        <p class="notice">Loading recent results...</p>
+      </div>
     </div>
   </section>
 
@@ -204,9 +427,14 @@
       <small>Around the game</small>
       <h2>Latest Cricket News</h2>
     </div>
+
     <div class="card">
-      <h3>Cricket news is being prepared</h3>
-      <p class="muted">Verified headlines, match reports and cricket updates will appear here after a news source is connected.</p>
+      <h3>Cricket News Centre</h3>
+      <p class="muted">
+        Verified headlines, match reports and cricket updates will appear
+        here after a news source is connected.
+      </p>
+      <span class="status">News source pending</span>
     </div>
   </section>
 
@@ -215,10 +443,22 @@
       <small>International cricket</small>
       <h2>Teams</h2>
     </div>
+
     <div class="grid">
-      <article class="card"><h3>🌍 International Teams</h3><p class="muted">Team profiles, squads and international cricket information.</p></article>
-      <article class="card"><h3>🏆 Test Nations</h3><p class="muted">Profiles and match information for international Test-playing teams.</p></article>
-      <article class="card"><h3>🌐 Global Competitions</h3><p class="muted">Coverage planned for international series and major cricket leagues.</p></article>
+      <article class="card">
+        <h3>🌍 International Teams</h3>
+        <p class="muted">Team profiles, squads and international cricket information.</p>
+      </article>
+
+      <article class="card">
+        <h3>🏆 Test Nations</h3>
+        <p class="muted">Profiles and match information for international Test-playing teams.</p>
+      </article>
+
+      <article class="card">
+        <h3>🌐 Global Competitions</h3>
+        <p class="muted">Coverage planned for international series and major cricket leagues.</p>
+      </article>
     </div>
   </section>
 
@@ -227,9 +467,13 @@
       <small>Know the players</small>
       <h2>Players</h2>
     </div>
+
     <div class="card">
       <h3>Cricket Player Profiles</h3>
-      <p class="muted">Player biographies, teams, roles and career statistics will be added using a reliable data source.</p>
+      <p class="muted">
+        Player biographies, teams, roles and career statistics will be added
+        using a reliable data source.
+      </p>
     </div>
   </section>
 
@@ -238,10 +482,24 @@
       <small>The numbers</small>
       <h2>Rankings</h2>
     </div>
+
     <div class="grid">
-      <article class="card"><h3>🏆 Team Rankings</h3><p class="muted">International team rankings across Test, ODI and T20 formats.</p><span class="status">Ranking data pending</span></article>
-      <article class="card"><h3>⭐ Player Rankings</h3><p class="muted">Batting, bowling and all-rounder rankings from verified sources.</p><span class="status">Ranking data pending</span></article>
-      <article class="card"><h3>📊 Statistics</h3><p class="muted">Player and team performance statistics when reliable data is available.</p></article>
+      <article class="card">
+        <h3>🏆 Team Rankings</h3>
+        <p class="muted">International team rankings across Test, ODI and T20 formats.</p>
+        <span class="status">Ranking data pending</span>
+      </article>
+
+      <article class="card">
+        <h3>⭐ Player Rankings</h3>
+        <p class="muted">Batting, bowling and all-rounder rankings from verified sources.</p>
+        <span class="status">Ranking data pending</span>
+      </article>
+
+      <article class="card">
+        <h3>📊 Statistics</h3>
+        <p class="muted">Player and team performance statistics when reliable data is available.</p>
+      </article>
     </div>
   </section>
 
@@ -250,9 +508,13 @@
       <small>Watch cricket</small>
       <h2>Cricket Videos</h2>
     </div>
+
     <div class="card">
       <h3>Video Centre</h3>
-      <p class="muted">Official highlights and cricket videos can be listed here when a suitable source is connected. Copyrighted broadcasts will not be rehosted without permission.</p>
+      <p class="muted">
+        Official highlights and cricket videos can be listed here when a suitable
+        source is connected. Copyrighted broadcasts will not be rehosted without permission.
+      </p>
     </div>
   </section>
 </main>
@@ -260,100 +522,317 @@
 <footer>
   <strong>CricPluse</strong>
   <p>Your cricket home for international cricket.</p>
-  <p>Scores and match data will be shown when verified sources are available.</p>
+  <p>Match data is provided by the connected cricket score service.</p>
   <a href="#home">Back to top ↑</a>
 </footer>
 
 <script>
-  const scoreContainer = document.getElementById("liveScores");
-  const refreshButton = document.getElementById("refreshScores");
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+
+  const scoreContainer = $("liveScores");
+  const refreshButton = $("refreshScores");
+  const liveMatchesContainer = $("liveMatches");
+  const upcomingMatchesContainer = $("upcomingMatches");
+  const recentMatchesContainer = $("recentMatches");
+  const lastUpdated = $("lastUpdated");
+
+  let allMatches = [];
+  let selectedFormat = "All";
+  let loading = false;
+  let lastSuccessfulLoad = 0;
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;",
-      '"': "&quot;", "'": "&#39;"
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
     })[char]);
   }
 
-  function renderScores(matches) {
-    if (!Array.isArray(matches) || matches.length === 0) {
-      scoreContainer.innerHTML =
-        '<p class="notice">No live matches are currently available from the score service.</p>';
-      return;
+  function getState(match) {
+    const explicit = String(match.matchState || "").toUpperCase();
+
+    if (["LIVE", "COMPLETED", "UPCOMING"].includes(explicit)) {
+      return explicit;
     }
 
-    scoreContainer.innerHTML = '<div class="grid">' + matches.map(match => {
-      const name = escapeHTML(match.name || match.matchType || "Cricket Match");
-      const status = escapeHTML(match.status || "Match status unavailable");
-      const teams = Array.isArray(match.teamInfo) ? match.teamInfo : [];
-      const scores = Array.isArray(match.score) ? match.score : [];
+    const status = String(match.status || "").toLowerCase();
 
-      const teamRows = teams.map((team, index) => {
-        const score = scores[index];
-        const scoreText = score
-          ? `${escapeHTML(score.r ?? "")}/${escapeHTML(score.w ?? "")} (${escapeHTML(score.o ?? "")} ov)`
-          : "";
-        return `<div class="team"><span>${escapeHTML(team.name || "Team")}</span><span class="score">${scoreText}</span></div>`;
-      }).join("");
+    if (
+      match.matchEnded === true ||
+      /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed)\b/i.test(status)
+    ) {
+      return "COMPLETED";
+    }
 
-      return `<article class="card score-card">
-        <span class="status">MATCH</span>
-        <h3 style="margin-top:10px">${name}</h3>
-        ${teamRows}
+    if (match.matchStarted === true && match.matchEnded !== true) {
+      return "LIVE";
+    }
+
+    return "UPCOMING";
+  }
+
+  function formatOvers(value) {
+    if (value === null || value === undefined || value === "") {
+      return "";
+    }
+
+    return String(value);
+  }
+
+  function formatScore(score) {
+    if (!score) return "Score unavailable";
+
+    const runs = score.r ?? 0;
+    const wickets = score.w ?? 0;
+    const overs = formatOvers(score.o);
+
+    return `${runs}/${wickets}${overs ? ` (${overs} ov)` : ""}`;
+  }
+
+  function getFormat(match) {
+    const type = String(match.matchType || "").toLowerCase();
+
+    if (type === "test") return "Test";
+    if (type === "odi") return "ODI";
+
+    if (type === "t20" || type === "t20i") {
+      const name = String(match.name || "").toLowerCase();
+      const series = String(match.series || "").toLowerCase();
+      const text = `${name} ${series}`;
+
+      if (
+        type === "t20i" ||
+        /\bt20i\b|t20 international|men's t20 international|women's t20 international/.test(text)
+      ) {
+        return "T20I";
+      }
+
+      return "T20";
+    }
+
+    return type ? type.toUpperCase() : "Other";
+  }
+
+  function matchesFormat(match) {
+    if (selectedFormat === "All") return true;
+
+    if (selectedFormat === "Test" || selectedFormat === "ODI") {
+      return getFormat(match) === selectedFormat;
+    }
+
+    if (selectedFormat === "T20I") {
+      return getFormat(match) === "T20I";
+    }
+
+    if (selectedFormat === "League") {
+      const name = String(match.name || "").toLowerCase();
+      const series = String(match.series || "").toLowerCase();
+      const text = `${name} ${series}`;
+
+      return /league|cup|premier|challenge|qualifier|tri.series|championship|big bash|ipl|psl|bpl|hundred|franchise/.test(text)
+        || getFormat(match) === "T20";
+    }
+
+    return true;
+  }
+
+  function renderEmpty(message) {
+    return `<p class="notice">${escapeHTML(message)}</p>`;
+  }
+
+  function renderMatch(match) {
+    const state = getState(match);
+
+    const badgeClass = state === "LIVE"
+      ? "live-badge"
+      : state === "COMPLETED"
+        ? "completed-badge"
+        : "upcoming-badge";
+
+    const name = escapeHTML(match.name || "Cricket Match");
+    const status = escapeHTML(match.status || "Match details unavailable");
+    const teams = Array.isArray(match.teams) ? match.teams : [];
+    const scores = Array.isArray(match.score) ? match.score : [];
+
+    // Prefer the inning names supplied with each score.
+    // These names may not follow the same order as match.teams.
+    const inningsHTML = scores.map(score => {
+      const inning = escapeHTML(score.inning || "Innings");
+
+      return `
+        <div class="team">
+          <span class="team-name">${inning}</span>
+          <span class="score">${escapeHTML(formatScore(score))}</span>
+        </div>`;
+    }).join("");
+
+    const teamList = teams.length
+      ? teams.map(team => escapeHTML(team)).join(" vs ")
+      : "Teams unavailable";
+
+    const dateHTML = match.date
+      ? `<p class="muted match-meta">📅 ${escapeHTML(match.date)}</p>`
+      : "";
+
+    const venueHTML = match.venue
+      ? `<p class="muted match-meta">📍 ${escapeHTML(match.venue)}</p>`
+      : "";
+
+    const formatHTML = getFormat(match) !== "OTHER"
+      ? `<span class="status">${escapeHTML(getFormat(match))}</span>`
+      : "";
+
+    return `
+      <article class="card score-card">
+        <span class="status ${badgeClass}">${state}</span>
+        ${formatHTML}
+        <h3 class="match-title">${name}</h3>
+        <p>${teamList}</p>
+        ${inningsHTML || '<p class="muted">Score details unavailable.</p>'}
         <p class="muted">${status}</p>
+        ${dateHTML}
+        ${venueHTML}
       </article>`;
-    }).join("") + '</div>';
+  }
+
+  function renderGroup(container, matches, emptyMessage) {
+    const filtered = matches.filter(matchesFormat);
+
+    container.innerHTML = filtered.length
+      ? filtered.map(renderMatch).join("")
+      : renderEmpty(emptyMessage);
+  }
+
+  function renderAll() {
+    const live = allMatches.filter(match => getState(match) === "LIVE");
+    const upcoming = allMatches.filter(match => getState(match) === "UPCOMING");
+    const completed = allMatches.filter(match => getState(match) === "COMPLETED");
+
+    renderGroup(
+      liveMatchesContainer,
+      live,
+      "No live matches are currently reported by the score provider."
+    );
+
+    renderGroup(
+      upcomingMatchesContainer,
+      upcoming,
+      "No upcoming matches are currently available in this API response."
+    );
+
+    renderGroup(
+      recentMatchesContainer,
+      completed,
+      "No completed results are currently available."
+    );
+
+    if (live.length) {
+      scoreContainer.innerHTML =
+        `<div class="grid">${live.filter(matchesFormat).map(renderMatch).join("") || renderEmpty("No live matches match this filter.")}</div>`;
+    } else {
+      scoreContainer.innerHTML = renderEmpty(
+        "There are no matches reported as live right now. Check Recent Results for completed games."
+      );
+    }
   }
 
   async function loadScores() {
+    if (loading) return;
+
+    loading = true;
     refreshButton.disabled = true;
     refreshButton.textContent = "Loading...";
-    scoreContainer.innerHTML = '<p class="muted">Fetching the latest available scores...</p>';
+
+    if (!lastSuccessfulLoad) {
+      scoreContainer.innerHTML =
+        '<p class="muted">Fetching the latest available scores...</p>';
+    }
 
     try {
-      const response = await fetch("/api/live-scores", { cache: "no-store" });
+      const response = await fetch("/api/live-scores", {
+        cache: "no-store"
+      });
+
       const result = await response.json();
 
-      if (!response.ok || result.status === "failure" || result.error) {
-        throw new Error(result.reason || result.message || "Score service unavailable");
+      if (!response.ok || result.status === "failure" || result.status === "error") {
+        throw new Error(
+          result.message || result.reason || "The score service is unavailable."
+        );
       }
 
       const matches = Array.isArray(result.data)
         ? result.data
-        : Array.isArray(result.matches) ? result.matches : [];
+        : Array.isArray(result.matches)
+          ? result.matches
+          : [];
 
-      renderScores(matches);
+      allMatches = matches;
+      renderAll();
+
+      lastSuccessfulLoad = Date.now();
+
+      lastUpdated.textContent =
+        "Last updated: " + new Date(lastSuccessfulLoad).toLocaleTimeString();
+
     } catch (error) {
-      scoreContainer.innerHTML =
-        '<div class="card error"><strong>Live scores are temporarily unavailable</strong>' +
-        '<p class="muted">The score service could not return match information. Please try again later.</p>' +
-        '<p class="muted">Service message: ' + escapeHTML(error.message || "Unknown error") + '</p></div>';
+      const message = escapeHTML(
+        error.message || "Unknown error"
+      );
+
+      if (!lastSuccessfulLoad) {
+        scoreContainer.innerHTML = `
+          <div class="card error">
+            <strong>Scores are temporarily unavailable.</strong>
+            <p class="muted">Please try refreshing the scores later.</p>
+            <p class="muted">${message}</p>
+          </div>`;
+
+        const failure = renderEmpty(
+          "Match information could not be loaded."
+        );
+
+        liveMatchesContainer.innerHTML = failure;
+        upcomingMatchesContainer.innerHTML = failure;
+        recentMatchesContainer.innerHTML = failure;
+      } else {
+        lastUpdated.textContent =
+          "Refresh failed. Showing the last successfully loaded data.";
+      }
+
     } finally {
+      loading = false;
       refreshButton.disabled = false;
       refreshButton.textContent = "↻ Refresh Scores";
     }
   }
 
   refreshButton.addEventListener("click", loadScores);
-  loadScores();
 
   document.querySelectorAll(".filter").forEach(button => {
     button.addEventListener("click", () => {
-      document.querySelectorAll(".filter").forEach(item => item.classList.remove("active"));
+      document.querySelectorAll(".filter").forEach(item => {
+        item.classList.remove("active");
+      });
+
       button.classList.add("active");
-      const format = button.dataset.format;
-      const message = format === "All"
-        ? "Showing the global matches section."
-        : `The ${format} filter is selected. Match listings will populate when schedule data is connected.`;
-      const existing = document.getElementById("formatMessage");
-      if (existing) existing.remove();
-      const note = document.createElement("p");
-      note.id = "formatMessage";
-      note.className = "notice";
-      note.textContent = message;
-      document.querySelector("#matches .filters").after(note);
+      selectedFormat = button.dataset.format || "All";
+
+      renderAll();
     });
   });
+
+  loadScores();
+
+  // Automatically refresh once per minute without overlapping requests.
+  window.setInterval(loadScores, 60000);
+})();
 </script>
 </body>
 </html>
