@@ -36,7 +36,10 @@
       line-height: 1.6;
     }
 
-    a { color: inherit; text-decoration: none; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
     button { font: inherit; }
 
@@ -180,7 +183,9 @@
       box-shadow: 0 5px 18px #0b35200a;
     }
 
-    .score-card { border-top: 4px solid var(--green); }
+    .score-card {
+      border-top: 4px solid var(--green);
+    }
 
     .status {
       display: inline-block;
@@ -190,6 +195,7 @@
       border-radius: 30px;
       font-size: 11px;
       font-weight: bold;
+      margin: 0 5px 5px 0;
     }
 
     .live-badge {
@@ -235,10 +241,10 @@
 
     .team {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 8px 0;
+      padding: 9px 0;
       border-bottom: 1px solid #edf1ed;
     }
 
@@ -247,6 +253,7 @@
     .team-name {
       min-width: 0;
       overflow-wrap: anywhere;
+      font-weight: 600;
     }
 
     .score {
@@ -292,6 +299,72 @@
       flex-wrap: wrap;
     }
 
+    /* Team names and logos */
+    .score-teams {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin: 14px 0;
+    }
+
+    .score-team {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    .team-logo {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #f5f7f5;
+      border: 1px solid #edf1ed;
+      padding: 2px;
+    }
+
+    .vs-label {
+      color: #7a8980;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .innings-list {
+      margin: 12px 0;
+      padding: 0 12px;
+      background: #f7faf7;
+      border: 1px solid #edf1ed;
+      border-radius: 10px;
+    }
+
+    .score-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #e5ece6;
+    }
+
+    .score-row:last-child { border-bottom: 0; }
+
+    .score-row .score-team {
+      flex: 1;
+    }
+
+    .score-row .team-name {
+      font-size: 13px;
+    }
+
+    .score-row .score {
+      font-size: 14px;
+    }
+
     footer {
       background: var(--dark);
       color: #e4eee7;
@@ -316,6 +389,14 @@
       nav { width: 100%; }
       h2 { font-size: 25px; }
       .card { padding: 17px; }
+      .team-logo {
+        width: 26px;
+        height: 26px;
+        flex-basis: 26px;
+      }
+      .innings-list { padding: 0 9px; }
+      .score-row { gap: 7px; }
+      .score-row .score { font-size: 13px; }
     }
   </style>
 </head>
@@ -565,12 +646,12 @@
 
     if (
       match.matchEnded === true ||
-      /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed)\b/i.test(status)
+      /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory|conceded|forfeited)\b/i.test(status)
     ) {
       return "COMPLETED";
     }
 
-    if (match.matchStarted === true && match.matchEnded !== true) {
+    if (match.matchStarted === true) {
       return "LIVE";
     }
 
@@ -646,6 +727,81 @@
     return `<p class="notice">${escapeHTML(message)}</p>`;
   }
 
+  function getTeamInfo(team, teamInfo) {
+    const target = String(team || "").trim().toLowerCase();
+
+    if (!target) return null;
+
+    return teamInfo.find(item => {
+      if (!item) return false;
+
+      const fullName = String(item.name || "").trim().toLowerCase();
+      const shortName = String(item.shortname || "").trim().toLowerCase();
+
+      return fullName === target || shortName === target;
+    }) || null;
+  }
+
+  function renderTeam(team, teamInfo) {
+    const label = escapeHTML(team);
+    const info = getTeamInfo(team, teamInfo);
+    const logo = String(info?.img || "").trim();
+
+    let logoHTML = "";
+
+    // Only render HTTPS logo URLs.
+    if (/^https:\/\/[^"'<> ]+$/i.test(logo)) {
+      logoHTML = `
+        <img
+          class="team-logo"
+          src="${escapeHTML(logo)}"
+          alt=""
+          loading="lazy"
+          referrerpolicy="no-referrer"
+        >`;
+    }
+
+    return `
+      <span class="score-team">
+        ${logoHTML}
+        <span>${label}</span>
+      </span>`;
+  }
+
+  function findInningsTeam(score, teams) {
+    // The API endpoint preserves the original provider label here.
+    const original = String(
+      score.providerInning || score.inning || ""
+    ).trim().toLowerCase();
+
+    if (!original) return null;
+
+    const candidates = teams
+      .filter(Boolean)
+      .map(team => ({
+        team,
+        normalized: String(team).trim().toLowerCase()
+      }))
+      .filter(item => item.normalized)
+      .sort((a, b) => b.normalized.length - a.normalized.length);
+
+    for (const item of candidates) {
+      const teamName = item.normalized;
+
+      if (
+        original === teamName ||
+        original.startsWith(teamName + " inning") ||
+        original.startsWith(teamName + " innings")
+      ) {
+        return item.team;
+      }
+    }
+
+    // A combined or ambiguous provider label is not reliable enough
+    // to assign the score to one team.
+    return null;
+  }
+
   function renderMatch(match) {
     const state = getState(match);
 
@@ -656,25 +812,38 @@
         : "upcoming-badge";
 
     const name = escapeHTML(match.name || "Cricket Match");
-    const status = escapeHTML(match.status || "Match details unavailable");
-    const teams = Array.isArray(match.teams) ? match.teams : [];
-    const scores = Array.isArray(match.score) ? match.score : [];
+    const status = escapeHTML(
+      match.status || "Match details unavailable"
+    );
 
-    // Prefer the inning names supplied with each score.
-    // These names may not follow the same order as match.teams.
-    const inningsHTML = scores.map(score => {
-      const inning = escapeHTML(score.inning || "Innings");
+    const teams = Array.isArray(match.teams) ? match.teams : [];
+    const teamInfo = Array.isArray(match.teamInfo) ? match.teamInfo : [];
+    const scores = Array.isArray(match.score) ? match.score : [];
+    const format = getFormat(match);
+
+    const teamList = teams.length
+      ? teams.map(team => renderTeam(team, teamInfo)).join(
+          '<span class="vs-label">VS</span>'
+        )
+      : '<span class="muted">Teams unavailable</span>';
+
+    const inningsHTML = scores.map((score, index) => {
+      const team = findInningsTeam(score, teams);
+
+      // Use the actual team name only if the provider label
+      // identifies that team unambiguously.
+      const labelHTML = team
+        ? renderTeam(team, teamInfo)
+        : `<span class="team-name">${escapeHTML(
+            score.inning || `Innings ${index + 1}`
+          )}</span>`;
 
       return `
-        <div class="team">
-          <span class="team-name">${inning}</span>
+        <div class="team score-row">
+          ${labelHTML}
           <span class="score">${escapeHTML(formatScore(score))}</span>
         </div>`;
     }).join("");
-
-    const teamList = teams.length
-      ? teams.map(team => escapeHTML(team)).join(" vs ")
-      : "Teams unavailable";
 
     const dateHTML = match.date
       ? `<p class="muted match-meta">📅 ${escapeHTML(match.date)}</p>`
@@ -684,17 +853,26 @@
       ? `<p class="muted match-meta">📍 ${escapeHTML(match.venue)}</p>`
       : "";
 
-    const formatHTML = getFormat(match) !== "OTHER"
-      ? `<span class="status">${escapeHTML(getFormat(match))}</span>`
+    const formatHTML = format !== "Other"
+      ? `<span class="status">${escapeHTML(format)}</span>`
       : "";
 
     return `
       <article class="card score-card">
-        <span class="status ${badgeClass}">${state}</span>
+        <span class="status ${badgeClass}">${escapeHTML(state)}</span>
         ${formatHTML}
+
         <h3 class="match-title">${name}</h3>
-        <p>${teamList}</p>
-        ${inningsHTML || '<p class="muted">Score details unavailable.</p>'}
+
+        <div class="score-teams">
+          ${teamList}
+        </div>
+
+        <div class="innings-list">
+          ${inningsHTML ||
+            '<p class="muted">Score details unavailable.</p>'}
+        </div>
+
         <p class="muted">${status}</p>
         ${dateHTML}
         ${venueHTML}
@@ -710,9 +888,17 @@
   }
 
   function renderAll() {
-    const live = allMatches.filter(match => getState(match) === "LIVE");
-    const upcoming = allMatches.filter(match => getState(match) === "UPCOMING");
-    const completed = allMatches.filter(match => getState(match) === "COMPLETED");
+    const live = allMatches.filter(
+      match => getState(match) === "LIVE"
+    );
+
+    const upcoming = allMatches.filter(
+      match => getState(match) === "UPCOMING"
+    );
+
+    const completed = allMatches.filter(
+      match => getState(match) === "COMPLETED"
+    );
 
     renderGroup(
       liveMatchesContainer,
@@ -733,8 +919,11 @@
     );
 
     if (live.length) {
-      scoreContainer.innerHTML =
-        `<div class="grid">${live.filter(matchesFormat).map(renderMatch).join("") || renderEmpty("No live matches match this filter.")}</div>`;
+      const filteredLive = live.filter(matchesFormat);
+
+      scoreContainer.innerHTML = filteredLive.length
+        ? `<div class="grid">${filteredLive.map(renderMatch).join("")}</div>`
+        : renderEmpty("No live matches match this filter.");
     } else {
       scoreContainer.innerHTML = renderEmpty(
         "There are no matches reported as live right now. Check Recent Results for completed games."
@@ -761,9 +950,15 @@
 
       const result = await response.json();
 
-      if (!response.ok || result.status === "failure" || result.status === "error") {
+      if (
+        !response.ok ||
+        result.status === "failure" ||
+        result.status === "error"
+      ) {
         throw new Error(
-          result.message || result.reason || "The score service is unavailable."
+          result.message ||
+          result.reason ||
+          "The score service is unavailable."
         );
       }
 
@@ -779,7 +974,8 @@
       lastSuccessfulLoad = Date.now();
 
       lastUpdated.textContent =
-        "Last updated: " + new Date(lastSuccessfulLoad).toLocaleTimeString();
+        "Last updated: " +
+        new Date(lastSuccessfulLoad).toLocaleTimeString();
 
     } catch (error) {
       const message = escapeHTML(
@@ -830,7 +1026,7 @@
 
   loadScores();
 
-  // Automatically refresh once per minute without overlapping requests.
+  // Refresh once per minute without overlapping requests.
   window.setInterval(loadScores, 60000);
 })();
 </script>
