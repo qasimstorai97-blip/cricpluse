@@ -7,7 +7,7 @@ export async function onRequest(context) {
     "Content-Type": "application/json; charset=utf-8"
   };
 
-  if (!apiKey) {
+  if (!apiKey || !apiKey.trim()) {
     return Response.json(
       {
         status: "error",
@@ -29,9 +29,25 @@ export async function onRequest(context) {
       cache: "no-store"
     });
 
-    const data = await response.json();
+    let data;
 
-    if (!response.ok || data.status === "failure") {
+    try {
+      data = await response.json();
+    } catch {
+      return Response.json(
+        {
+          status: "error",
+          message: "The cricket provider returned an invalid response."
+        },
+        { status: 502, headers }
+      );
+    }
+
+    if (
+      !response.ok ||
+      data.status === "failure" ||
+      data.status === "error"
+    ) {
       return Response.json(
         {
           status: "error",
@@ -41,24 +57,33 @@ export async function onRequest(context) {
       );
     }
 
-    if (!Array.isArray(data.data)) {
-      const { apikey, ...safeData } = data;
+    // Never expose the provider API key to website visitors.
+    const { apikey, ...safeData } = data;
 
-      return Response.json(safeData, {
-        status: 200,
-        headers
-      });
+    if (!Array.isArray(data.data)) {
+      return Response.json(
+        {
+          ...safeData,
+          status: data.status || "success",
+          data: []
+        },
+        { status: 200, headers }
+      );
     }
 
     const matches = data.data.map((match) => {
-      const matchStatus = String(match.status || "").toLowerCase();
+      const status = String(match.status || "").trim();
 
-      const resultWords =
-        /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory)\b/i;
+      const completedPattern =
+        /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory|conceded|forfeited)\b/i;
 
       let matchState;
 
-      if (match.matchEnded === true || resultWords.test(matchStatus)) {
+      // A confirmed completed match must never be labelled LIVE.
+      if (
+        match.matchEnded === true ||
+        completedPattern.test(status)
+      ) {
         matchState = "COMPLETED";
       } else if (match.matchStarted === true) {
         matchState = "LIVE";
@@ -66,24 +91,30 @@ export async function onRequest(context) {
         matchState = "UPCOMING";
       }
 
+      // Keep the original score data, but provide clean inning labels
+      // for the website to display. Do not change runs, wickets or overs.
+      const scores = Array.isArray(match.score)
+        ? match.score.map((score, index) => ({
+            ...score,
+            providerInning: score.inning || "",
+            inning: `Innings ${index + 1}`
+          }))
+        : [];
+
       return {
         ...match,
-        matchState
+        matchState,
+        score: scores
       };
     });
-
-    // Never send the provider's API key back to website visitors.
-    const { apikey, ...safeData } = data;
 
     return Response.json(
       {
         ...safeData,
+        status: data.status || "success",
         data: matches
       },
-      {
-        status: 200,
-        headers
-      }
+      { status: 200, headers }
     );
   } catch {
     return Response.json(
@@ -91,10 +122,7 @@ export async function onRequest(context) {
         status: "error",
         message: "Could not fetch cricket scores."
       },
-      {
-        status: 502,
-        headers
-      }
+      { status: 502, headers }
     );
   }
 }
