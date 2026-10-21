@@ -4,8 +4,16 @@ export async function onRequest(context) {
 
   if (!apiKey) {
     return Response.json(
-      { status: "error", message: "API key is not configured" },
-      { status: 500 }
+      {
+        status: "error",
+        message: "CRICKET_API_KEY is not configured for this environment"
+      },
+      {
+        status: 500,
+        headers: {
+          "Cache-Control": "no-store"
+        }
+      }
     );
   }
 
@@ -13,12 +21,12 @@ export async function onRequest(context) {
     "https://api.cricapi.com/v1/currentMatches"
   );
 
-  apiUrl.searchParams.set("apikey", apiKey);
+  apiUrl.searchParams.set("apikey", apiKey.trim());
   apiUrl.searchParams.set("offset", "0");
 
   try {
     const response = await fetch(apiUrl.toString(), {
-      cf: { cacheTtl: 600, cacheEverything: true }
+      cache: "no-store"
     });
 
     const data = await response.json();
@@ -26,13 +34,21 @@ export async function onRequest(context) {
     return Response.json(data, {
       status: response.ok ? 200 : response.status,
       headers: {
-        "Cache-Control": "public, max-age=60"
+        "Cache-Control": "no-store"
       }
     });
   } catch {
     return Response.json(
-      { status: "error", message: "Could not fetch cricket scores" },
-      { status: 502 }
+      {
+        status: "error",
+        message: "Could not fetch cricket scores"
+      },
+      {
+        status: 502,
+        headers: {
+          "Cache-Control": "no-store"
+        }
+      }
     );
   }
 }
