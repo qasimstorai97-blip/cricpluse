@@ -7,6 +7,7 @@ export async function onRequest(context) {
     "Content-Type": "application/json; charset=utf-8"
   };
 
+  // Check whether the API key is configured.
   if (!apiKey || !apiKey.trim()) {
     return Response.json(
       {
@@ -37,27 +38,36 @@ export async function onRequest(context) {
       return Response.json(
         {
           status: "error",
-          message: "The cricket provider returned an invalid response."
+          message: "The cricket provider returned an invalid response.",
+          reason: `HTTP ${response.status}`
         },
         { status: 502, headers }
       );
     }
 
+    // Report a useful error without exposing the API key.
     if (
       !response.ok ||
       data.status === "failure" ||
       data.status === "error"
     ) {
+      const reason = String(
+        data.reason ||
+        data.message ||
+        `HTTP ${response.status}`
+      ).slice(0, 250);
+
       return Response.json(
         {
           status: "error",
-          message: "The cricket score provider returned an error."
+          message: "The cricket score provider returned an error.",
+          reason
         },
         { status: 502, headers }
       );
     }
 
-    // Never expose the provider API key to website visitors.
+    // Never expose the provider API key.
     const { apikey, ...safeData } = data;
 
     if (!Array.isArray(data.data)) {
@@ -79,7 +89,6 @@ export async function onRequest(context) {
 
       let matchState;
 
-      // A confirmed completed match must never be labelled LIVE.
       if (
         match.matchEnded === true ||
         completedPattern.test(status)
@@ -91,8 +100,8 @@ export async function onRequest(context) {
         matchState = "UPCOMING";
       }
 
-      // Keep the original score data, but provide clean inning labels
-      // for the website to display. Do not change runs, wickets or overs.
+      // Preserve the provider's original innings information.
+      // Do not alter runs, wickets, overs, or team data.
       const scores = Array.isArray(match.score)
         ? match.score.map((score, index) => ({
             ...score,
@@ -120,7 +129,8 @@ export async function onRequest(context) {
     return Response.json(
       {
         status: "error",
-        message: "Could not fetch cricket scores."
+        message: "Could not fetch cricket scores.",
+        reason: "Network request failed or the provider is unreachable."
       },
       { status: 502, headers }
     );
