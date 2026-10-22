@@ -183,9 +183,7 @@
       box-shadow: 0 5px 18px #0b35200a;
     }
 
-    .score-card {
-      border-top: 4px solid var(--green);
-    }
+    .score-card { border-top: 4px solid var(--green); }
 
     .status {
       display: inline-block;
@@ -201,6 +199,11 @@
     .live-badge {
       background: #ffe5e5;
       color: #b42318;
+    }
+
+    .paused-badge {
+      background: #fff1cc;
+      color: #805b00;
     }
 
     .completed-badge {
@@ -299,7 +302,6 @@
       flex-wrap: wrap;
     }
 
-    /* Team names and logos */
     .score-teams {
       display: flex;
       align-items: center;
@@ -353,17 +355,11 @@
 
     .score-row:last-child { border-bottom: 0; }
 
-    .score-row .score-team {
-      flex: 1;
-    }
+    .score-row .score-team { flex: 1; }
 
-    .score-row .team-name {
-      font-size: 13px;
-    }
+    .score-row .team-name { font-size: 13px; }
 
-    .score-row .score {
-      font-size: 14px;
-    }
+    .score-row .score { font-size: 14px; }
 
     footer {
       background: var(--dark);
@@ -389,11 +385,13 @@
       nav { width: 100%; }
       h2 { font-size: 25px; }
       .card { padding: 17px; }
+
       .team-logo {
         width: 26px;
         height: 26px;
         flex-basis: 26px;
       }
+
       .innings-list { padding: 0 9px; }
       .score-row { gap: 7px; }
       .score-row .score { font-size: 13px; }
@@ -479,6 +477,13 @@
       <button class="filter" data-format="ODI" type="button">ODI</button>
       <button class="filter" data-format="T20I" type="button">T20I</button>
       <button class="filter" data-format="League" type="button">Leagues</button>
+    </div>
+
+    <div class="match-section">
+      <h3>⏸ Paused / Stumps</h3>
+      <div id="pausedMatches" class="grid">
+        <p class="notice">Loading paused matches...</p>
+      </div>
     </div>
 
     <div class="match-section">
@@ -615,6 +620,7 @@
 
   const scoreContainer = $("liveScores");
   const refreshButton = $("refreshScores");
+  const pausedMatchesContainer = $("pausedMatches");
   const liveMatchesContainer = $("liveMatches");
   const upcomingMatchesContainer = $("upcomingMatches");
   const recentMatchesContainer = $("recentMatches");
@@ -638,7 +644,7 @@
   function getState(match) {
     const explicit = String(match.matchState || "").toUpperCase();
 
-    if (["LIVE", "COMPLETED", "UPCOMING"].includes(explicit)) {
+    if (["LIVE", "PAUSED", "COMPLETED", "UPCOMING"].includes(explicit)) {
       return explicit;
     }
 
@@ -649,6 +655,12 @@
       /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory|conceded|forfeited)\b/i.test(status)
     ) {
       return "COMPLETED";
+    }
+
+    if (
+      /\bstumps?\b|lunch|tea break|rain delay|bad light|play suspended|day close|innings break|match delayed|weather interruption/i.test(status)
+    ) {
+      return "PAUSED";
     }
 
     if (match.matchStarted === true) {
@@ -749,7 +761,6 @@
 
     let logoHTML = "";
 
-    // Only render HTTPS logo URLs.
     if (/^https:\/\/[^"'<> ]+$/i.test(logo)) {
       logoHTML = `
         <img
@@ -769,7 +780,6 @@
   }
 
   function findInningsTeam(score, teams) {
-    // The API endpoint preserves the original provider label here.
     const original = String(
       score.providerInning || score.inning || ""
     ).trim().toLowerCase();
@@ -797,8 +807,6 @@
       }
     }
 
-    // A combined or ambiguous provider label is not reliable enough
-    // to assign the score to one team.
     return null;
   }
 
@@ -807,9 +815,11 @@
 
     const badgeClass = state === "LIVE"
       ? "live-badge"
-      : state === "COMPLETED"
-        ? "completed-badge"
-        : "upcoming-badge";
+      : state === "PAUSED"
+        ? "paused-badge"
+        : state === "COMPLETED"
+          ? "completed-badge"
+          : "upcoming-badge";
 
     const name = escapeHTML(match.name || "Cricket Match");
     const status = escapeHTML(
@@ -830,8 +840,6 @@
     const inningsHTML = scores.map((score, index) => {
       const team = findInningsTeam(score, teams);
 
-      // Use the actual team name only if the provider label
-      // identifies that team unambiguously.
       const labelHTML = team
         ? renderTeam(team, teamInfo)
         : `<span class="team-name">${escapeHTML(
@@ -888,6 +896,10 @@
   }
 
   function renderAll() {
+    const paused = allMatches.filter(
+      match => getState(match) === "PAUSED"
+    );
+
     const live = allMatches.filter(
       match => getState(match) === "LIVE"
     );
@@ -898,6 +910,12 @@
 
     const completed = allMatches.filter(
       match => getState(match) === "COMPLETED"
+    );
+
+    renderGroup(
+      pausedMatchesContainer,
+      paused,
+      "No paused or stumps matches are currently available."
     );
 
     renderGroup(
@@ -918,17 +936,13 @@
       "No completed results are currently available."
     );
 
-    if (live.length) {
-      const filteredLive = live.filter(matchesFormat);
+    const filteredLive = live.filter(matchesFormat);
 
-      scoreContainer.innerHTML = filteredLive.length
-        ? `<div class="grid">${filteredLive.map(renderMatch).join("")}</div>`
-        : renderEmpty("No live matches match this filter.");
-    } else {
-      scoreContainer.innerHTML = renderEmpty(
-        "There are no matches reported as live right now. Check Recent Results for completed games."
-      );
-    }
+    scoreContainer.innerHTML = filteredLive.length
+      ? `<div class="grid">${filteredLive.map(renderMatch).join("")}</div>`
+      : renderEmpty(
+          "There are no matches reported as live right now. Check Paused / Stumps and Recent Results."
+        );
   }
 
   async function loadScores() {
@@ -945,13 +959,30 @@
 
     try {
       const response = await fetch("/api/live-scores", {
-        cache: "no-store"
+        method: "GET",
+        cache: "no-store",
+        headers: {
+          "Accept": "application/json"
+        }
       });
+
+      const contentType = response.headers.get("content-type") || "";
+
+      if (!response.ok) {
+        throw new Error(
+          `Score service returned HTTP ${response.status}.`
+        );
+      }
+
+      if (!contentType.includes("application/json")) {
+        throw new Error(
+          "The score endpoint did not return JSON. Check the /api/live-scores route."
+        );
+      }
 
       const result = await response.json();
 
       if (
-        !response.ok ||
         result.status === "failure" ||
         result.status === "error"
       ) {
@@ -966,7 +997,13 @@
         ? result.data
         : Array.isArray(result.matches)
           ? result.matches
-          : [];
+          : null;
+
+      if (!matches) {
+        throw new Error(
+          "The score service response does not contain a valid matches list."
+        );
+      }
 
       allMatches = matches;
       renderAll();
@@ -978,9 +1015,11 @@
         new Date(lastSuccessfulLoad).toLocaleTimeString();
 
     } catch (error) {
-      const message = escapeHTML(
-        error.message || "Unknown error"
-      );
+      const rawMessage = error instanceof TypeError
+        ? "Could not connect to /api/live-scores. Check the published website and Cloudflare Pages API route."
+        : (error.message || "Unknown error");
+
+      const message = escapeHTML(rawMessage);
 
       if (!lastSuccessfulLoad) {
         scoreContainer.innerHTML = `
@@ -991,16 +1030,21 @@
           </div>`;
 
         const failure = renderEmpty(
-          "Match information could not be loaded."
+          "Match information could not be loaded. Please refresh the page."
         );
 
+        pausedMatchesContainer.innerHTML = failure;
         liveMatchesContainer.innerHTML = failure;
         upcomingMatchesContainer.innerHTML = failure;
         recentMatchesContainer.innerHTML = failure;
+
+        lastUpdated.textContent = "Unable to load score data.";
       } else {
         lastUpdated.textContent =
           "Refresh failed. Showing the last successfully loaded data.";
       }
+
+      console.error("CricPluse score loading error:", error);
 
     } finally {
       loading = false;
@@ -1026,7 +1070,7 @@
 
   loadScores();
 
-  // Refresh once per minute without overlapping requests.
+  // Refresh scores every 60 seconds without overlapping requests.
   window.setInterval(loadScores, 60000);
 })();
 </script>
