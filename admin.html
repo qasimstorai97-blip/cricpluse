@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>CricPluse | Admin Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      background: #1e293b;
+      box-shadow: 0 15px 40px #0005;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 10px;
+    }
+
+    .description {
+      text-align: center;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 8px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: 2px solid #22c55e;
+      border-color: transparent;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      background: #16a34a;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #15803d;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .secondary {
+      background: #475569;
+    }
+
+    .secondary:hover {
+      background: #334155;
+    }
+
+    #message {
+      margin-top: 18px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .notice {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    a {
+      color: #86efac;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <div class="logo">🏏</div>
+    <h1>CricPluse Admin</h1>
+
+    <p class="description">
+      Sign in to your administrator account.
+    </p>
+
+    <form id="loginForm">
+      <label for="email">Email address</label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="username"
+        placeholder="Your admin email"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Your password"
+        required
+      >
+
+      <button id="loginButton" type="submit">
+        Sign In
+      </button>
+    </form>
+
+    <section id="accountPanel" class="hidden">
+      <h2>Signed in</h2>
+      <p id="accountEmail"></p>
+
+      <p>
+        Authentication succeeded. Admin editing is not enabled yet.
+        Additional server-side administrator authorization is required
+        before sensitive actions can be performed.
+      </p>
+
+      <button id="logoutButton" class="secondary" type="button">
+        Sign Out
+      </button>
+    </section>
+
+    <p id="message" role="status" aria-live="polite"></p>
+
+    <p class="notice">
+      CricPluse administration. Only authorized users should sign in.
+      <br>
+      <a href="/">Return to CricPluse homepage</a>
+    </p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    "use strict";
+
+    const SUPABASE_URL =
+      "https://cwjzyhdpbbmventzbvdm.supabase.co";
+
+    // Paste your Supabase Publishable key between the quotes.
+    // Never use a Secret key or service_role key in this file.
+    const SUPABASE_PUBLISHABLE_KEY =
+      "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+
+    // Replace this with the exact email of your authorized admin user.
+    const ADMIN_EMAIL =
+      "YOUR_ADMIN_EMAIL_HERE".trim().toLowerCase();
+
+    const form = document.getElementById("loginForm");
+    const loginButton = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+    const accountPanel = document.getElementById("accountPanel");
+    const accountEmail = document.getElementById("accountEmail");
+
+    let supabaseClient = null;
+
+    function showMessage(text) {
+      message.textContent = text;
+    }
+
+    function showLogin() {
+      form.classList.remove("hidden");
+      accountPanel.classList.add("hidden");
+      accountEmail.textContent = "";
+    }
+
+    function showAccount(email) {
+      form.classList.add("hidden");
+      accountPanel.classList.remove("hidden");
+      accountEmail.textContent = "Account: " + email;
+    }
+
+    async function initialize() {
+      if (!window.supabase) {
+        showMessage(
+          "Supabase library could not load. Check your internet connection."
+        );
+        loginButton.disabled = true;
+        return;
+      }
+
+      if (
+        !SUPABASE_PUBLISHABLE_KEY ||
+        SUPABASE_PUBLISHABLE_KEY ===
+          "PASTE_YOUR_PUBLISHABLE_KEY_HERE"
+      ) {
+        showMessage(
+          "Setup required: add your Supabase Publishable key in admin.html."
+        );
+        return;
+      }
+
+      if (
+        !ADMIN_EMAIL ||
+        ADMIN_EMAIL === "YOUR_ADMIN_EMAIL_HERE"
+      ) {
+        showMessage(
+          "Setup required: add your authorized administrator email."
+        );
+        return;
+      }
+
+      supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        }
+      );
+
+      const { data, error } =
+        await supabaseClient.auth.getSession();
+
+      if (error) {
+        showMessage("Could not check session. Please sign in again.");
+        return;
+      }
+
+      if (data.session?.user) {
+        const userEmail =
+          (data.session.user.email || "").toLowerCase();
+
+        if (userEmail === ADMIN_EMAIL) {
+          showAccount(userEmail);
+          showMessage("You are signed in.");
+        } else {
+          await supabaseClient.auth.signOut();
+          showLogin();
+          showMessage("This account is not authorized as administrator.");
+        }
+      }
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      if (!supabaseClient) {
+        showMessage("Setup is incomplete. Check the configuration.");
+        return;
+      }
+
+      loginButton.disabled = true;
+      showMessage("Signing in...");
+
+      const email = document
+        .getElementById("email")
+        .value.trim()
+        .toLowerCase();
+
+      const password =
+        document.getElementById("password").value;
+
+      try {
+        const { data, error } =
+          await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
+
+        if (error) {
+          showMessage("Sign in failed. Check your email and password.");
+          return;
+        }
+
+        const userEmail =
+          (data.user?.email || "").toLowerCase();
+
+        if (userEmail !== ADMIN_EMAIL) {
+          await supabaseClient.auth.signOut();
+          showLogin();
+          showMessage("This account is not authorized as administrator.");
+          return;
+        }
+
+        showAccount(userEmail);
+        showMessage(
+          "Signed in successfully. Admin editing is not enabled yet."
+        );
+
+        document.getElementById("password").value = "";
+      } catch (error) {
+        showMessage("A connection error occurred. Please try again.");
+      } finally {
+        loginButton.disabled = false;
+      }
+    });
+
+    document.getElementById("logoutButton")
+      .addEventListener("click", async function () {
+        if (!supabaseClient) return;
+
+        const { error } = await supabaseClient.auth.signOut();
+
+        if (error) {
+          showMessage("Sign out failed. Please try again.");
+          return;
+        }
+
+        showLogin();
+        showMessage("You have signed out.");
+      });
+
+    initialize().catch(function () {
+      showMessage("Could not initialize authentication.");
+    });
+  </script>
+</body>
+</html>
