@@ -8,11 +8,20 @@ export async function onRequest(context) {
   };
 
   const cache = caches.default;
+
   const cacheKey = new Request(
     new URL("/__cricpluse_cache/live-scores", context.request.url)
   );
 
+  const cooldownKey = new Request(
+    new URL(
+      "/__cricpluse_cache/live-scores-cooldown",
+      context.request.url
+    )
+  );
+
   const CACHE_TTL = 90;
+  const COOLDOWN_MS = 15 * 60 * 1000;
 
   async function readCachedScores() {
     try {
@@ -35,7 +44,57 @@ export async function onRequest(context) {
     }
   }
 
-  async function useCachedScores(reason) {
+  async function isCoolingDown() {
+    try {
+      const response = await cache.match(cooldownKey);
+      if (!response) return false;
+
+      const saved = await response.json();
+
+      return (
+        Number.isFinite(saved?.cooldownUntil) &&
+        saved.cooldownUntil > Date.now()
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  async function setCooldown() {
+    try {
+      await cache.put(
+        cooldownKey,
+        new Response(
+          JSON.stringify({
+            cooldownUntil: Date.now() + COOLDOWN_MS
+          }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "public, max-age=900"
+            }
+          }
+        )
+      );
+    } catch {
+      // Continue if caching is unavailable.
+    }
+  }
+
+  async function useCachedScores(reason, setCooldownFlag = true) {
+    const reasonText = String(
+      reason || "Unknown provider error"
+    );
+
+    if (
+      setCooldownFlag &&
+      /blocked|429|rate.?limit|too many|15 minutes/i.test(
+        reasonText
+      )
+    ) {
+      await setCooldown();
+    }
+
     const saved = await readCachedScores();
 
     if (saved) {
@@ -49,7 +108,10 @@ export async function onRequest(context) {
             saved.cachedAt
           ).toISOString()
         },
-        { status: 200, headers }
+        {
+          status: 200,
+          headers
+        }
       );
     }
 
@@ -57,11 +119,12 @@ export async function onRequest(context) {
       {
         status: "error",
         message: "Cricket scores are temporarily unavailable.",
-        reason: String(
-          reason || "No saved scores are available."
-        ).slice(0, 250)
+        reason: reasonText.slice(0, 250)
       },
-      { status: 502, headers }
+      {
+        status: 502,
+        headers
+      }
     );
   }
 
@@ -71,12 +134,16 @@ export async function onRequest(context) {
         status: "error",
         message: "Cricket API key is not configured."
       },
-      { status: 500, headers }
+      {
+        status: 500,
+        headers
+      }
     );
   }
 
   const saved = await readCachedScores();
 
+  // Return fresh cached data without calling the provider.
   if (
     saved &&
     Date.now() - saved.cachedAt < CACHE_TTL * 1000
@@ -85,6 +152,14 @@ export async function onRequest(context) {
       status: 200,
       headers
     });
+  }
+
+  // Do not retry the provider during a known cooldown.
+  if (await isCoolingDown()) {
+    return useCachedScores(
+      "Provider cooldown is active; waiting before retrying.",
+      false
+    );
   }
 
   const apiUrl = new URL(
@@ -109,15 +184,39 @@ export async function onRequest(context) {
       );
     }
 
+    const providerReason = String(
+      data?.reason || data?.message || ""
+    );
+
+    const providerStatus = String(
+      data?.status || ""
+    ).toLowerCase();
+
+    const blockedPattern =
+      /blocked|rate.?limit|too many requests|15 minutes|temporarily blocked/i;
+
+    // Handle rate limits even when the provider returns HTTP 200.
+    if (
+      response.status === 429 ||
+      blockedPattern.test(providerReason)
+    ) {
+      await setCooldown();
+
+      return useCachedScores(
+        providerReason ||
+          `Provider rate limit. HTTP ${response.status}`,
+        false
+      );
+    }
+
     if (
       !response.ok ||
-      data.status === "failure" ||
-      data.status === "error"
+      providerStatus === "failure" ||
+      providerStatus === "error"
     ) {
       return useCachedScores(
-        data.reason ||
-        data.message ||
-        `HTTP ${response.status}`
+        providerReason ||
+          `HTTP ${response.status}`
       );
     }
 
@@ -127,16 +226,16 @@ export async function onRequest(context) {
       );
     }
 
-    // Match results that indicate the match has finished.
     const completedPattern =
       /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory|conceded|forfeited)\b/i;
 
-    // A match may have started but temporarily stopped.
     const breakPattern =
       /\b(stumps|lunch|tea|rain delay|bad light|play suspended|day \d+ close|day \d+ stumps|innings break|interval)\b/i;
 
     const matches = data.data.map((match) => {
-      const status = String(match.status || "").trim();
+      const status = String(
+        match.status || ""
+      ).trim();
 
       let matchState;
 
@@ -168,15 +267,17 @@ export async function onRequest(context) {
       };
     });
 
-    // Never expose the provider API key.
+    // Never expose the provider API key in the response.
     const { apikey, ...safeData } = data;
+
+    const now = Date.now();
 
     const payload = {
       ...safeData,
       status: data.status || "success",
       data: matches,
       stale: false,
-      lastSuccessfulUpdate: new Date().toISOString()
+      lastSuccessfulUpdate: new Date(now).toISOString()
     };
 
     try {
@@ -185,7 +286,7 @@ export async function onRequest(context) {
         new Response(
           JSON.stringify({
             payload,
-            cachedAt: Date.now()
+            cachedAt: now
           }),
           {
             headers: {
@@ -196,7 +297,7 @@ export async function onRequest(context) {
         )
       );
     } catch {
-      // Scores can still be returned if caching fails.
+      // Return scores even if caching fails.
     }
 
     return Response.json(payload, {
