@@ -12,16 +12,20 @@ export async function onRequest(context) {
     new URL("/__cricpluse_cache/live-scores", context.request.url)
   );
 
-  // Read previously saved scores from Cloudflare Cache.
+  const CACHE_TTL = 90;
+
   async function readCachedScores() {
     try {
-      const cachedResponse = await cache.match(cacheKey);
+      const response = await cache.match(cacheKey);
+      if (!response) return null;
 
-      if (!cachedResponse) return null;
+      const saved = await response.json();
 
-      const saved = await cachedResponse.json();
-
-      if (!saved || !saved.payload || !saved.cachedAt) {
+      if (
+        !saved ||
+        !saved.payload ||
+        !Number.isFinite(saved.cachedAt)
+      ) {
         return null;
       }
 
@@ -31,7 +35,6 @@ export async function onRequest(context) {
     }
   }
 
-  // Return the last successful scores if the provider fails.
   async function useCachedScores(reason) {
     const saved = await readCachedScores();
 
@@ -54,7 +57,9 @@ export async function onRequest(context) {
       {
         status: "error",
         message: "Cricket scores are temporarily unavailable.",
-        reason: String(reason || "No saved scores are available.").slice(0, 250)
+        reason: String(
+          reason || "No saved scores are available."
+        ).slice(0, 250)
       },
       { status: 502, headers }
     );
@@ -70,14 +75,16 @@ export async function onRequest(context) {
     );
   }
 
-  // Avoid repeatedly contacting the provider when recent scores are cached.
   const saved = await readCachedScores();
 
-  if (saved && Date.now() - saved.cachedAt < 90000) {
-    return Response.json(
-      saved.payload,
-      { status: 200, headers }
-    );
+  if (
+    saved &&
+    Date.now() - saved.cachedAt < CACHE_TTL * 1000
+  ) {
+    return Response.json(saved.payload, {
+      status: 200,
+      headers
+    });
   }
 
   const apiUrl = new URL(
@@ -114,17 +121,19 @@ export async function onRequest(context) {
       );
     }
 
-    // Never expose the API key to visitors.
-    const { apikey, ...safeData } = data;
-
     if (!Array.isArray(data.data)) {
       return useCachedScores(
         "The provider did not return a valid match list."
       );
     }
 
+    // Match results that indicate the match has finished.
     const completedPattern =
       /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory|conceded|forfeited)\b/i;
+
+    // A match may have started but temporarily stopped.
+    const breakPattern =
+      /\b(stumps|lunch|tea|rain delay|bad light|play suspended|day \d+ close|day \d+ stumps|innings break|interval)\b/i;
 
     const matches = data.data.map((match) => {
       const status = String(match.status || "").trim();
@@ -136,6 +145,8 @@ export async function onRequest(context) {
         completedPattern.test(status)
       ) {
         matchState = "COMPLETED";
+      } else if (breakPattern.test(status)) {
+        matchState = "PAUSED";
       } else if (match.matchStarted === true) {
         matchState = "LIVE";
       } else {
@@ -157,14 +168,17 @@ export async function onRequest(context) {
       };
     });
 
+    // Never expose the provider API key.
+    const { apikey, ...safeData } = data;
+
     const payload = {
       ...safeData,
       status: data.status || "success",
       data: matches,
-      stale: false
+      stale: false,
+      lastSuccessfulUpdate: new Date().toISOString()
     };
 
-    // Save successful results for future requests.
     try {
       await cache.put(
         cacheKey,
@@ -176,7 +190,7 @@ export async function onRequest(context) {
           {
             headers: {
               "Content-Type": "application/json; charset=utf-8",
-              "Cache-Control": "public, max-age=900"
+              "Cache-Control": "public, max-age=90"
             }
           }
         )
