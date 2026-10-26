@@ -615,32 +615,20 @@
   }
 
   function renderAll() {
-    // Hide old completed results older than two days, but keep live,
-    // paused/stumps, and upcoming matches regardless of their date.
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const recentCutoff = new Date(today);
-    recentCutoff.setDate(recentCutoff.getDate() - 2);
+    // Show only live, paused/stumps, and upcoming matches.
+    // Completed matches are intentionally hidden from every section.
+    const visibleMatches = allMatches.filter(match => getState(match) !== "COMPLETED");
 
-    const filteredMatches = allMatches.filter(match => {
-      if (getState(match) !== "COMPLETED") return true;
-      if (!match.date) return true;
-
-      const dateText = String(match.date).slice(0, 10);
-      const matchDate = new Date(`${dateText}T00:00:00`);
-      if (Number.isNaN(matchDate.getTime())) return false;
-      return matchDate >= recentCutoff;
-    });
-
-    const paused = filteredMatches.filter(m => getState(m) === "PAUSED");
-    const live = filteredMatches.filter(m => getState(m) === "LIVE");
-    const upcoming = filteredMatches.filter(m => getState(m) === "UPCOMING");
-    const completed = filteredMatches.filter(m => getState(m) === "COMPLETED");
+    const paused = visibleMatches.filter(m => getState(m) === "PAUSED");
+    const live = visibleMatches.filter(m => getState(m) === "LIVE");
+    const upcoming = visibleMatches.filter(m => getState(m) === "UPCOMING");
 
     renderGroup(pausedMatchesContainer, paused, "No paused or stumps matches are currently available.");
     renderGroup(liveMatchesContainer, live, "No live matches are currently reported.");
     renderGroup(upcomingMatchesContainer, upcoming, "No upcoming matches are currently available.");
-    renderGroup(recentMatchesContainer, completed, "No recent completed results are currently available.");
+
+    // Keep the Recent Results section but do not display completed matches there.
+    recentMatchesContainer.innerHTML = renderEmpty("Completed matches are hidden. Live and upcoming matches are shown above.");
 
     const filteredLive = live.filter(matchesFormat);
     scoreContainer.innerHTML = filteredLive.length
