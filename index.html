@@ -1,12 +1,11 @@
-
+```javascript
 function getState(match) {
   const status = String(match.status || "").trim();
   const lowerStatus = status.toLowerCase();
   const explicit = String(match.matchState || "").toUpperCase();
 
-  // Stumps and breaks take priority over the provider's matchEnded flag.
   const pausedPattern =
-    /\bstumps?\b|\blunch\b|\btea\b|rain delay|bad light|play suspended|day \d+ close|innings break|match delayed|weather interruption|interval/i;
+    /\bstumps?\b|\blunch\b|\btea\b|rain delay|bad light|play suspended|day\s*\d+\s*close|innings break|match delayed|weather interruption|interval|rain stopped play|bad weather/i;
 
   if (pausedPattern.test(lowerStatus)) {
     return "PAUSED";
@@ -23,7 +22,9 @@ function getState(match) {
     return "COMPLETED";
   }
 
-  if (explicit === "PAUSED") return "PAUSED";
+  if (explicit === "PAUSED") {
+    return "PAUSED";
+  }
 
   if (explicit === "LIVE" || match.matchStarted === true) {
     return "LIVE";
@@ -35,3 +36,4 @@ function getState(match) {
 
   return "UPCOMING";
 }
+```
