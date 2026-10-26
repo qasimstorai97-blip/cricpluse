@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -488,21 +487,29 @@
   }
 
   function getState(match) {
+    const status = String(match.status || "").trim();
+    const lowerStatus = status.toLowerCase();
     const explicit = String(match.matchState || "").toUpperCase();
-    if (["LIVE", "PAUSED", "COMPLETED", "UPCOMING"].includes(explicit)) return explicit;
 
-    const status = String(match.status || "").toLowerCase();
-
-    if (match.matchEnded === true ||
-      /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory|conceded|forfeited)\b/i.test(status)) {
-      return "COMPLETED";
-    }
-
-    if (/\bstumps?\b|lunch|tea break|rain delay|bad light|play suspended|day close|innings break|match delayed|weather interruption/i.test(status)) {
+    // Stumps or a break does not mean a multi-day match is completed.
+    const breakPattern = /\bstumps?\b|\blunch\b|\btea\b|rain delay|bad light|play suspended|day \d+ close|innings break|match delayed|weather interruption|interval/i;
+    if (breakPattern.test(lowerStatus) && match.matchStarted === true) {
       return "PAUSED";
     }
 
-    if (match.matchStarted === true) return "LIVE";
+    const completedPattern = /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory|conceded|forfeited)\b/i;
+    if (completedPattern.test(lowerStatus)) {
+      return "COMPLETED";
+    }
+
+    if (explicit === "COMPLETED" || match.matchEnded === true) {
+      return "COMPLETED";
+    }
+
+    if (explicit === "PAUSED") return "PAUSED";
+    if (explicit === "LIVE" || match.matchStarted === true) return "LIVE";
+    if (explicit === "UPCOMING" || match.matchStarted === false) return "UPCOMING";
+
     return "UPCOMING";
   }
 
@@ -608,15 +615,32 @@
   }
 
   function renderAll() {
-    const paused = allMatches.filter(m => getState(m) === "PAUSED");
-    const live = allMatches.filter(m => getState(m) === "LIVE");
-    const upcoming = allMatches.filter(m => getState(m) === "UPCOMING");
-    const completed = allMatches.filter(m => getState(m) === "COMPLETED");
+    // Hide old completed results older than two days, but keep live,
+    // paused/stumps, and upcoming matches regardless of their date.
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const recentCutoff = new Date(today);
+    recentCutoff.setDate(recentCutoff.getDate() - 2);
+
+    const filteredMatches = allMatches.filter(match => {
+      if (getState(match) !== "COMPLETED") return true;
+      if (!match.date) return true;
+
+      const dateText = String(match.date).slice(0, 10);
+      const matchDate = new Date(`${dateText}T00:00:00`);
+      if (Number.isNaN(matchDate.getTime())) return false;
+      return matchDate >= recentCutoff;
+    });
+
+    const paused = filteredMatches.filter(m => getState(m) === "PAUSED");
+    const live = filteredMatches.filter(m => getState(m) === "LIVE");
+    const upcoming = filteredMatches.filter(m => getState(m) === "UPCOMING");
+    const completed = filteredMatches.filter(m => getState(m) === "COMPLETED");
 
     renderGroup(pausedMatchesContainer, paused, "No paused or stumps matches are currently available.");
     renderGroup(liveMatchesContainer, live, "No live matches are currently reported.");
     renderGroup(upcomingMatchesContainer, upcoming, "No upcoming matches are currently available.");
-    renderGroup(recentMatchesContainer, completed, "No completed results are currently available.");
+    renderGroup(recentMatchesContainer, completed, "No recent completed results are currently available.");
 
     const filteredLive = live.filter(matchesFormat);
     scoreContainer.innerHTML = filteredLive.length
@@ -662,7 +686,7 @@
       lastUpdated.textContent = "Last updated: " + new Date(lastSuccessfulLoad).toLocaleTimeString();
 
       if (result.stale === true) {
-        lastUpdated.textContent += " · Showing cached scores";
+        lastUpdated.textContent += " · Cached scores (may be outdated)";
       }
     } catch (error) {
       const message = error instanceof TypeError
