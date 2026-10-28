@@ -1,5 +1,7 @@
 
 function getState(match) {
+  
+function getState(match) {
   const status = String(match?.status || "").trim();
   const lowerStatus = status.toLowerCase();
 
@@ -7,7 +9,7 @@ function getState(match) {
     .trim()
     .toUpperCase();
 
-  // 1. د پای ته رسېدلو لوبو حالت
+  // Completed matches
   const completedPattern =
     /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory|conceded|forfeited)\b/i;
 
@@ -19,9 +21,9 @@ function getState(match) {
     return "COMPLETED";
   }
 
-  // 2. د ځنډېدلو یا موقتي درېدلو لوبو حالت
+  // Paused matches
   const pausedPattern =
-    /\b(stumps?|lunch|tea|innings break|interval|rain delay|bad light|play suspended|day\s*\d+\s*close|match delayed|weather interruption|rain stopped play|bad weather)\b/i;
+    /\bstumps?\b|\blunch\b|\btea\b|rain delay|bad light|play suspended|day\s*\d+\s*close|innings break|match delayed|weather interruption|interval|rain stopped play|bad weather/i;
 
   if (
     pausedPattern.test(lowerStatus) ||
@@ -30,22 +32,14 @@ function getState(match) {
     return "PAUSED";
   }
 
-  // 3. د روانو لوبو حالت
-  if (
-    explicit === "LIVE" ||
-    match?.matchStarted === true
-  ) {
-    return "LIVE";
-  }
+  // Explicit state from the API
+  if (explicit === "LIVE") return "LIVE";
+  if (explicit === "UPCOMING") return "UPCOMING";
 
-  // 4. د راتلونکو لوبو حالت
-  if (
-    explicit === "UPCOMING" ||
-    match?.matchStarted === false
-  ) {
-    return "UPCOMING";
-  }
+  // Match start indicators
+  if (match?.matchStarted === true) return "LIVE";
+  if (match?.matchStarted === false) return "UPCOMING";
 
-  // 5. که حالت معلوم نه وي
+  // Unknown state
   return "UPCOMING";
 }
