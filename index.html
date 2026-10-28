@@ -1,39 +1,51 @@
-```javascript
+
 function getState(match) {
-  const status = String(match.status || "").trim();
+  const status = String(match?.status || "").trim();
   const lowerStatus = status.toLowerCase();
-  const explicit = String(match.matchState || "").toUpperCase();
 
-  const pausedPattern =
-    /\bstumps?\b|\blunch\b|\btea\b|rain delay|bad light|play suspended|day\s*\d+\s*close|innings break|match delayed|weather interruption|interval|rain stopped play|bad weather/i;
+  const explicit = String(match?.matchState || "")
+    .trim()
+    .toUpperCase();
 
-  if (pausedPattern.test(lowerStatus)) {
-    return "PAUSED";
-  }
-
+  // 1. د پای ته رسېدلو لوبو حالت
   const completedPattern =
     /\b(won|drawn|tied|abandoned|cancelled|canceled|no result|match complete|match completed|innings victory|conceded|forfeited)\b/i;
 
-  if (completedPattern.test(lowerStatus)) {
+  if (
+    completedPattern.test(status) ||
+    explicit === "COMPLETED" ||
+    match?.matchEnded === true
+  ) {
     return "COMPLETED";
   }
 
-  if (explicit === "COMPLETED" || match.matchEnded === true) {
-    return "COMPLETED";
-  }
+  // 2. د ځنډېدلو یا موقتي درېدلو لوبو حالت
+  const pausedPattern =
+    /\b(stumps?|lunch|tea|innings break|interval|rain delay|bad light|play suspended|day\s*\d+\s*close|match delayed|weather interruption|rain stopped play|bad weather)\b/i;
 
-  if (explicit === "PAUSED") {
+  if (
+    pausedPattern.test(lowerStatus) ||
+    explicit === "PAUSED"
+  ) {
     return "PAUSED";
   }
 
-  if (explicit === "LIVE" || match.matchStarted === true) {
+  // 3. د روانو لوبو حالت
+  if (
+    explicit === "LIVE" ||
+    match?.matchStarted === true
+  ) {
     return "LIVE";
   }
 
-  if (explicit === "UPCOMING" || match.matchStarted === false) {
+  // 4. د راتلونکو لوبو حالت
+  if (
+    explicit === "UPCOMING" ||
+    match?.matchStarted === false
+  ) {
     return "UPCOMING";
   }
 
+  // 5. که حالت معلوم نه وي
   return "UPCOMING";
 }
-```
