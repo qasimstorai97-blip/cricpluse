@@ -78,6 +78,11 @@
     .placeholder p{margin:0;color:var(--muted);line-height:1.65;font-size:13px}
     .placeholder h3{color:#f1f7f3}
     .placeholder-tag{display:inline-block;margin-bottom:10px;color:var(--gold);font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+    .source-link{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:9px 12px;border-radius:9px;background:#173528;border:1px solid #315442;color:#e8f2ec;font-size:12px;font-weight:800;text-decoration:none;position:relative;z-index:1}
+    .source-link:hover{background:#214735;border-color:var(--green)}
+    .directory-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .directory-list a{padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:#10251c;color:#dce9e1;text-decoration:none;font-size:12px;font-weight:750}
+    .directory-list a:hover{border-color:var(--green);color:#fff}
     .match-details{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
     .match-card.expanded .match-details{display:block}
     .details-btn{margin-top:12px;background:#173528;border:1px solid #315442;color:#dce9e1;padding:8px 11px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer}
@@ -195,101 +200,79 @@
 
     <section id="news">
       <div class="section-head">
-        <div><div class="section-kicker">From around the world</div><h2>Cricket News</h2><div class="sub">News and updates</div></div>
+        <div><div class="section-kicker">From trusted cricket sources</div><h2>Cricket News</h2><div class="sub">د کرکټ تازه خبرونه له باوري سرچینو څخه</div></div>
       </div>
       <div class="grid">
-        <article class="card placeholder">
-          <span class="placeholder-tag">Top stories</span><h3>Latest Cricket News</h3>
-          <p>News articles will appear here when a news source or admin-published articles are connected.</p>
+        <article class="card">
+          <span class="placeholder-tag">Official source</span><h3>ICC Latest News</h3>
+          <p class="muted">د نړیوال کرکټ شورا تازه خبرونه، اعلانونه او د سیالیو راپورونه.</p>
+          <a class="source-link" href="https://www.icc-cricket.com/news" target="_blank" rel="noopener">Open ICC News ↗</a>
         </article>
-        <article class="card placeholder">
-          <h3>Match Updates</h3>
-          <p>Important match updates and announcements can be published in this section.</p>
+        <article class="card">
+          <span class="placeholder-tag">Cricket coverage</span><h3>ESPNcricinfo News</h3>
+          <p class="muted">د نړیوالو او کورنیو سیالیو خبرونه، شننې او راپورونه.</p>
+          <a class="source-link" href="https://www.espncricinfo.com/cricket-news" target="_blank" rel="noopener">Read Cricket News ↗</a>
         </article>
-        <article class="card placeholder">
-          <h3>Series News</h3>
-          <p>Series previews, reports and cricket headlines will appear here.</p>
+        <article class="card">
+          <span class="placeholder-tag">More updates</span><h3>Cricket News Hub</h3>
+          <p class="muted">د خبرونو د نورو سرچینو لپاره د کرکټ نړیوال پوښښ وګورئ.</p>
+          <a class="source-link" href="https://www.cricbuzz.com/cricket-news" target="_blank" rel="noopener">Open Cricbuzz ↗</a>
         </article>
       </div>
+      <div class="notice" style="margin-top:14px">خبرونه د اصلي خپرونکو په وېب‌سایټونو کې لوستل کېږي؛ CricPluse د هغوی اصلي مقالې نه کاپي کوي.</div>
     </section>
 
     <section id="teams">
       <div class="section-head">
-        <div><div class="section-kicker">Know your side</div><h2>Teams</h2><div class="sub">International and domestic teams</div></div>
+        <div><div class="section-kicker">Know your side</div><h2>Teams</h2><div class="sub">د نړیوالو لوبډلو پېژندنه او رسمي معلومات</div></div>
       </div>
-      <div class="grid">
-        <article class="card placeholder">
-          <span class="placeholder-tag">Teams</span><h3>International Teams</h3>
-          <p>Team profiles, squads and recent performances will be added here.</p>
-        </article>
-        <article class="card placeholder">
-          <h3>Domestic Teams</h3>
-          <p>Domestic and league team information will be added here.</p>
-        </article>
-        <article class="card placeholder">
-          <h3>Team Statistics</h3>
-          <p>Team records and statistics will be displayed here.</p>
-        </article>
+      <div class="card">
+        <h3>International Cricket Teams</h3>
+        <p class="muted">د لوبډلو بشپړ پروفایلونه، سکواډونه او اړوند معلومات د ICC په رسمي پاڼه کې وګورئ.</p>
+        <div class="directory-list">
+          <a href="https://www.icc-cricket.com/teams/men" target="_blank" rel="noopener">Men's Teams ↗</a>
+          <a href="https://www.icc-cricket.com/teams/women" target="_blank" rel="noopener">Women's Teams ↗</a>
+          <a href="https://www.espncricinfo.com/records/team" target="_blank" rel="noopener">Team Records ↗</a>
+        </div>
+      </div>
+      <div class="grid" style="margin-top:15px">
+        <article class="card"><h3>Afghanistan</h3><p class="muted">د افغانستان د کرکټ خبرونه او لوبډلې معلومات.</p><a class="source-link" href="https://www.icc-cricket.com/teams/men/afghanistan" target="_blank" rel="noopener">Team information ↗</a></article>
+        <article class="card"><h3>Pakistan</h3><p class="muted">د پاکستان د کرکټ لوبډلې رسمي معلومات.</p><a class="source-link" href="https://www.icc-cricket.com/teams/men/pakistan" target="_blank" rel="noopener">Team information ↗</a></article>
+        <article class="card"><h3>India</h3><p class="muted">د هند د کرکټ لوبډلې رسمي معلومات.</p><a class="source-link" href="https://www.icc-cricket.com/teams/men/india" target="_blank" rel="noopener">Team information ↗</a></article>
       </div>
     </section>
 
     <section id="players">
       <div class="section-head">
-        <div><div class="section-kicker">Stars of the game</div><h2>Players</h2><div class="sub">Player profiles and statistics</div></div>
+        <div><div class="section-kicker">Stars of the game</div><h2>Players</h2><div class="sub">د لوبغاړو پروفایلونه او د مسلک ریکارډونه</div></div>
       </div>
       <div class="grid">
-        <article class="card placeholder">
-          <span class="placeholder-tag">Players</span><h3>Player Profiles</h3>
-          <p>Player biographies, roles and career information will appear here.</p>
-        </article>
-        <article class="card placeholder">
-          <h3>Batting Statistics</h3>
-          <p>Batting records and performance statistics will be added here.</p>
-        </article>
-        <article class="card placeholder">
-          <h3>Bowling Statistics</h3>
-          <p>Bowling records and performance statistics will be added here.</p>
-        </article>
+        <article class="card"><span class="placeholder-tag">Official profiles</span><h3>ICC Player Profiles</h3><p class="muted">د لوبغاړو پېژندنه، رولونه او رسمي پروفایلونه.</p><a class="source-link" href="https://www.icc-cricket.com/rankings/player-rankings" target="_blank" rel="noopener">Explore ICC Players ↗</a></article>
+        <article class="card"><span class="placeholder-tag">Batting</span><h3>Batting Records</h3><p class="muted">د منډو، سلیزو او نورو بیټینګ ریکارډونو معلومات.</p><a class="source-link" href="https://www.espncricinfo.com/records" target="_blank" rel="noopener">View Batting Records ↗</a></article>
+        <article class="card"><span class="placeholder-tag">Bowling</span><h3>Bowling Records</h3><p class="muted">د ویکټو او توپ‌اچونې ریکارډونه.</p><a class="source-link" href="https://www.espncricinfo.com/records" target="_blank" rel="noopener">View Bowling Records ↗</a></article>
       </div>
     </section>
 
     <section id="rankings">
       <div class="section-head">
-        <div><div class="section-kicker">The world leaderboard</div><h2>Rankings</h2><div class="sub">Cricket rankings</div></div>
+        <div><div class="section-kicker">The world leaderboard</div><h2>Rankings</h2><div class="sub">د ICC رسمي ټېسټ، یو ورځنیو او شل اوریزو درجه‌بندۍ</div></div>
       </div>
       <div class="grid">
-        <article class="card placeholder">
-          <span class="placeholder-tag">Rankings</span><h3>Test Rankings</h3>
-          <p>Team and player Test rankings will appear here when ranking data is connected.</p>
-        </article>
-        <article class="card placeholder">
-          <h3>ODI Rankings</h3>
-          <p>Team and player ODI rankings will appear here when ranking data is connected.</p>
-        </article>
-        <article class="card placeholder">
-          <h3>T20I Rankings</h3>
-          <p>Team and player T20I rankings will appear here when ranking data is connected.</p>
-        </article>
+        <article class="card"><span class="placeholder-tag">Test cricket</span><h3>Test Rankings</h3><p class="muted">د ټېسټ لوبډلو او لوبغاړو تازه درجه‌بندي.</p><a class="source-link" href="https://www.icc-cricket.com/rankings/team/mens/test" target="_blank" rel="noopener">View Test Rankings ↗</a></article>
+        <article class="card"><span class="placeholder-tag">One Day</span><h3>ODI Rankings</h3><p class="muted">د یو ورځنیو نړیوالو سیالیو درجه‌بندي.</p><a class="source-link" href="https://www.icc-cricket.com/rankings/team/mens/odi" target="_blank" rel="noopener">View ODI Rankings ↗</a></article>
+        <article class="card"><span class="placeholder-tag">T20 International</span><h3>T20I Rankings</h3><p class="muted">د شل اوریزو نړیوالو سیالیو درجه‌بندي.</p><a class="source-link" href="https://www.icc-cricket.com/rankings/team/mens/t20i" target="_blank" rel="noopener">View T20I Rankings ↗</a></article>
       </div>
+      <div class="notice" style="margin-top:14px">د درجه‌بندۍ شمېرې د ICC په رسمي پاڼه کې تازه کېږي. د CricPluse په پاڼه کې به یې مستقیمه اتوماتیکه شمېره‌ییزه بڼه وروسته د باوري وړیا API له تایید وروسته ونښلول شي.</div>
     </section>
 
     <section id="videos">
       <div class="section-head">
-        <div><div class="section-kicker">Watch the action</div><h2>Videos</h2><div class="sub">Cricket videos and highlights</div></div>
+        <div><div class="section-kicker">Watch the action</div><h2>Videos</h2><div class="sub">د کرکټ رسمي ویډیوګانې او هایلایټونه</div></div>
       </div>
       <div class="grid">
-        <article class="card placeholder">
-          <span class="placeholder-tag">Watch</span><h3>Match Highlights</h3>
-          <p>Video highlights can be added here using authorized video links.</p>
-        </article>
-        <article class="card placeholder">
-          <h3>Interviews</h3>
-          <p>Player and team interviews will appear here.</p>
-        </article>
-        <article class="card placeholder">
-          <h3>Featured Videos</h3>
-          <p>Featured cricket videos can be managed through your content workflow.</p>
-        </article>
+        <article class="card"><span class="placeholder-tag">Official ICC</span><h3>Match Highlights</h3><p class="muted">د نړیوالو سیالیو رسمي هایلایټونه او مهمې شېبې.</p><a class="source-link" href="https://www.icc-cricket.com/videos" target="_blank" rel="noopener">Watch ICC Videos ↗</a></article>
+        <article class="card"><span class="placeholder-tag">YouTube</span><h3>ICC Cricket Channel</h3><p class="muted">د ICC رسمي یوټیوب چینل؛ مرکې، لنډې ویډیوګانې او مهمې شېبې.</p><a class="source-link" href="https://www.youtube.com/@ICC" target="_blank" rel="noopener">Open ICC YouTube ↗</a></article>
+        <article class="card"><span class="placeholder-tag">More videos</span><h3>Cricket Video Library</h3><p class="muted">د سیالیو نورې ویډیوګانې او کرکټي پوښښ.</p><a class="source-link" href="https://www.espncricinfo.com/video" target="_blank" rel="noopener">Explore Videos ↗</a></article>
       </div>
     </section>
 
