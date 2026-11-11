@@ -4,9 +4,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="CricPluse - international cricket live scores, fixtures, results, news, teams and player rankings.">
+  <meta name="description" content="Follow international cricket live scores, match schedules, results and cricket news on CricPluse. Explore teams, players, rankings and videos.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="googlebot" content="index, follow">
   <meta name="theme-color" content="#071b14">
-  <title>CricPluse | Live Cricket Scores, News & Updates</title>
+  <link rel="canonical" href="https://cricpluse.pages.dev/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CricPluse">
+  <meta property="og:title" content="CricPluse | Live Cricket Scores, News & Updates">
+  <meta property="og:description" content="Follow international cricket live scores, match schedules, results and cricket news on CricPluse. Explore teams, players, rankings and videos.">
+  <meta property="og:url" content="https://cricpluse.pages.dev/">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CricPluse | Live Cricket Scores, News & Updates">
+  <meta name="twitter:description" content="Follow international cricket live scores, match schedules, results and cricket news on CricPluse.">
+
+  <title>CricPluse | Live Cricket Scores, Cricket News & Match Updates</title>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://cricpluse.pages.dev/#website",
+        "url": "https://cricpluse.pages.dev/",
+        "name": "CricPluse",
+        "description": "International cricket live scores, match schedules, results, news, teams, players and rankings.",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://cricpluse.pages.dev/#webpage",
+        "url": "https://cricpluse.pages.dev/",
+        "name": "CricPluse | Live Cricket Scores, Cricket News & Match Updates",
+        "description": "Follow international cricket live scores, match schedules, results and cricket news on CricPluse. Explore teams, players, rankings and videos.",
+        "isPartOf": {
+          "@id": "https://cricpluse.pages.dev/#website"
+        },
+        "inLanguage": "en"
+      }
+    ]
+  }
+  </script>
   <style>
 
     :root{
@@ -167,7 +209,7 @@
         </div>
         <button class="btn secondary" id="refreshScores" type="button">Refresh</button>
       </div>
-      <div id="apiMessage" class="notice">Loading match data...</div>
+      <div id="apiMessage" class="notice" role="status" aria-live="polite">Loading match data...</div>
       <div id="liveGrid" class="grid">
         <div class="empty">Loading scores...</div>
       </div>
@@ -209,7 +251,7 @@
         <div><div class="section-kicker">From around the world</div><h2>Cricket News</h2><div class="sub">Fresh cricket headlines, updated automatically from RSS news sources</div></div>
         <button class="btn secondary" id="refreshNews" type="button">Refresh News</button>
       </div>
-      <div id="newsMessage" class="notice">Loading latest cricket news...</div>
+      <div id="newsMessage" class="notice" role="status" aria-live="polite">Loading latest cricket news...</div>
       <div id="newsGrid" class="grid"><div class="empty news-loading">Loading latest headlines...</div></div>
     </section>
 
